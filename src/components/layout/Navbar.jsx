@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import { logoutUser } from "../../firebase/auth";
@@ -5,6 +6,7 @@ import { useAuthStore } from "../../store/authstore";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const profile = useAuthStore((state) => state.profile);
 
@@ -30,8 +32,21 @@ export default function Navbar() {
           HackWeek<span className="text-[#00B7FF]">2026</span>
         </Link>
 
-        {/* Links */}
-        <nav className="flex items-center gap-3 font-bold text-sm">
+        {/* Mobile toggle */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          className="md:hidden border-4 border-black bg-white p-3 shadow-[4px_4px_0_black]"
+          aria-expanded={menuOpen}
+          aria-label="Toggle navigation"
+        >
+          <span className="block h-0.5 w-6 bg-black mb-1" />
+          <span className="block h-0.5 w-6 bg-black mb-1" />
+          <span className="block h-0.5 w-6 bg-black" />
+        </button>
+
+        {/* Desktop links */}
+        <nav className="hidden md:flex items-center gap-3 font-bold text-sm">
           <Link className="border-4 border-black bg-white px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/">
             Home
           </Link>
@@ -82,6 +97,65 @@ export default function Navbar() {
           ) : null}
         </nav>
       </div>
+      {menuOpen ? (
+        <div className="md:hidden border-t-4 border-black bg-[#FFF8E7] px-4 pb-4 pt-4">
+          <nav className="flex flex-col gap-3 font-bold text-sm">
+            <Link
+              to="/"
+              onClick={() => setMenuOpen(false)}
+              className="border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_black]"
+            >
+              Home
+            </Link>
+
+            {!user ? (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-[#00B7FF] px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-[#00B7FF] px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Register
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-[#7AE582] px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Profile
+                </Link>
+                <Button
+                  type="button"
+                  onClick={async () => {
+                    await handleLogout();
+                    setMenuOpen(false);
+                  }}
+                  className="bg-[#FF595E] text-white w-full"
+                >
+                  Logout
+                </Button>
+              </>
+            )}
+          </nav>
+        </div>
+      ) : null}
     </header>
   );
 }

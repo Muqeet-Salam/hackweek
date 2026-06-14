@@ -186,7 +186,7 @@ export default function Landing() {
   const primaryCta = user ? "/dashboard" : "/login";
 
   return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory bg-[#FFF8E7]">
+    <div className="h-screen overflow-y-scroll md:snap-y md:snap-mandatory bg-[#FFF8E7] space-y-10 md:space-y-0">
 
       {/* ================= HERO ================= */}
       <section className="relative overflow-hidden snap-start flex items-center border-4 border-black bg-white shadow-[12px_12px_0_black] px-6 md:px-12 py-6 overflow-hidden">
@@ -250,7 +250,7 @@ export default function Landing() {
           </div>
 
           {/* RIGHT SIDE - 3D HERO */}
-          <div className="relative h-[70vh] overflow-hidden shadow-[10px_10px_0_black]">
+          <div className="relative h-[70vh] overflow-hidden shadow-[10px_10px_0_black] hidden md:block">
             <div className="scale-125 origin-center w-full h-full">
               <spline-viewer
                 url="https://prod.spline.design/cfVf9fOnUjYYPFif/scene.splinecode"
