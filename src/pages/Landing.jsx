@@ -90,7 +90,7 @@ const highlights = [
 
 const timeline = [
   {
-    date: "June 15",
+    date: "June 22",
     title: "Registration Opens",
     description: "Create your profile and secure your spot.",
     icon: CalendarCheck,
@@ -104,14 +104,14 @@ const timeline = [
     color: "#FFD23F",
   },
   {
-    date: "July 7-11",
+    date: "July 6-11",
     title: "Build & Submit",
     description: "Complete challenges and earn points daily.",
     icon: Code2,
     color: "#7AE582",
   },
   {
-    date: "July 12",
+    date: "July 11",
     title: "Final Deadline",
     description: "All submissions close at midnight.",
     icon: Clock,
@@ -186,10 +186,10 @@ export default function Landing() {
   const primaryCta = user ? "/dashboard" : "/login";
 
   return (
-    <div className="h-screen overflow-y-scroll md:snap-y md:snap-mandatory bg-[#FFF8E7] space-y-10 md:space-y-0">
+    <div className="min-h-screen bg-[#FFF8E7] space-y-10 md:space-y-0">
 
       {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden snap-start flex items-center border-4 border-black bg-white shadow-[12px_12px_0_black] px-6 md:px-12 py-6 overflow-hidden">
+      <section className="relative overflow-hidden flex items-center border-4 border-black bg-white shadow-[12px_12px_0_black] px-6 md:px-12 py-6 overflow-hidden">
 
         {/* background shapes */}
         <div className="absolute inset-0 z-0 pointer-events-none">
@@ -263,7 +263,7 @@ export default function Landing() {
       </section>
 
       {/* ================= HIGHLIGHTS ================= */}
-      <section className="min-h-screen snap-start flex items-center px-6 md:px-12">
+      <section className="min-h-screen flex items-center px-6 md:px-12">
 
       <div className="w-full">
 
@@ -359,7 +359,7 @@ export default function Landing() {
     </section>
 
       {/* ================= TIMELINE ================= */}
-      <section className="min-h-screen snap-start flex items-center px-6 md:px-12">
+      <section className="min-h-screen flex items-center px-6 md:px-12">
 
         <div className="w-full">
 
@@ -423,7 +423,7 @@ export default function Landing() {
 
       </section>
       {/* ================= STEPS ================= */}
-      <section className="min-h-screen snap-start flex items-center px-6 md:px-12">
+      <section className="min-h-screen flex items-center px-6 md:px-12">
 
         <div className="w-full">
 
@@ -514,7 +514,7 @@ export default function Landing() {
       </section>
 
       {/* ================= FAQ ================= */}
-      <section className="min-h-screen snap-start flex items-center p-6 md:p-12">
+      <section className="min-h-screen flex items-center p-6 md:p-12">
 
         <div className="w-full grid lg:grid-cols-2 gap-10 items-center">
 
@@ -583,7 +583,7 @@ export default function Landing() {
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="min-h-screen snap-start flex items-center justify-center p-6 md:p-12">
+      <section className="min-h-screen flex items-center justify-center p-6 md:p-12">
 
         <div className="relative max-w-5xl w-full border-4 border-black bg-[#FF595E] p-12 md:p-16 shadow-[14px_14px_0_black] overflow-hidden">
 
