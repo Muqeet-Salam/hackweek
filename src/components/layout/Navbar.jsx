@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import { logoutUser } from "../../firebase/auth";
 import { useAuthStore } from "../../store/authstore";
+import logo from "../../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -28,8 +29,18 @@ export default function Navbar() {
       <div className="flex items-center justify-between px-4 py-4 sm:px-6">
 
         {/* Logo */}
-        <Link to="/" className="text-2xl font-extrabold tracking-tight uppercase">
-          HackWeek<span className="text-[#00B7FF]">2026</span>
+        <Link
+          to="/"
+          className="flex items-center gap-3 text-2xl font-extrabold tracking-tight uppercase"
+        >
+          <img
+            src={logo}
+            alt="HackWeek Logo"
+            className="h-10 w-10 object-contain"
+          />
+          <span>
+            HackWeek<span className="text-[#00B7FF]">2026</span>
+          </span>
         </Link>
 
         {/* Mobile toggle */}

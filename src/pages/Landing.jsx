@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence  } from "framer-motion";
 import SplineCore from "../components/SplineCore";
+import RubiksCube from "../components/ui/RubiksCube";
+import { Canvas } from "@react-three/fiber";
 import {
   Award,
   CalendarCheck,
@@ -26,33 +28,57 @@ export function RotatingTagline() {
   ];
 
   const [index, setIndex] = useState(0);
+  const [display, setDisplay] = useState(texts[0]);
 
-  const handleHover = () => {
-    setIndex((prev) => (prev + 1) % texts.length);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+-/";
+
+  const scrambleText = (target, onComplete) => {
+    let frame = 0;
+
+    const interval = setInterval(() => {
+      const result = target
+        .split("")
+        .map((char, i) => {
+          if (i < frame) return target[i];
+          if (target[i] === " ") return " ";
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+
+      setDisplay(result);
+      frame++;
+
+      if (frame > target.length) {
+        clearInterval(interval);
+        setDisplay(target);
+        onComplete?.();
+      }
+    }, 25);
   };
 
-  const reset = () => {
-    setIndex(0);
-  };
+  useEffect(() => {
+    let timeout;
+
+    const run = (i) => {
+      scrambleText(texts[i], () => {
+        timeout = setTimeout(() => {
+          const next = (i + 1) % texts.length;
+          setIndex(next);
+          run(next);
+        }, 2500); // pause after reveal
+      });
+    };
+
+    run(0);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
-    <div
-      onMouseEnter={handleHover}
-      onMouseLeave={reset}
-      className="border-l-4 border-black pl-3 h-10 overflow-hidden cursor-pointer"
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={index}
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -10, opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="h-10 flex items-center text-lg font-medium"
-        >
-          {texts[index]}
-        </motion.div>
-      </AnimatePresence>
+    <div className="border-l-4 border-black pl-3 h-10 overflow-hidden">
+      <div className="h-10 flex items-center text-lg font-medium tracking-wide">
+        {display}
+      </div>
     </div>
   );
 }
@@ -189,24 +215,54 @@ export default function Landing() {
     <div className="min-h-screen bg-[#FFF8E7] space-y-10 md:space-y-0">
 
       {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden flex items-center border-4 border-black bg-white shadow-[12px_12px_0_black] px-6 md:px-12 py-6 overflow-hidden">
-
+      <section className="relative overflow-hidden flex items-start md:items-center border-4 border-black bg-white shadow-[12px_12px_0_black] px-4 sm:px-6 md:px-12 py-2 md:py-8">
         {/* background shapes */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute -top-16 -left-16 h-52 w-52 rotate-12 bg-[#FFD23F] border-4 border-black" />
           <div className="absolute -bottom-16 -right-16 h-52 w-52 -rotate-12 bg-[#00B7FF] border-4 border-black" />
         </div>
-        <div className="relative z-10 grid md:grid-cols-2 gap-10 w-full items-center">
+
+        {/* floating animated words */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none z-0 flex flex-row items-center gap-6">
+          
+          <motion.div
+            className="text-3xl sm:text-6xl font-black opacity-10"
+            animate={{ y: [0, 10, 0], rotate: [-2, 2, -2] }}
+            transition={{ duration: 6, repeat: Infinity }}
+          >
+            Learn
+          </motion.div>
+
+          <motion.div
+            className="text-3xl sm:text-6xl font-black opacity-10"
+            animate={{ y: [0, -10, 0], rotate: [2, -2, 2] }}
+            transition={{ duration: 7, repeat: Infinity }}
+          >
+            Code
+          </motion.div>
+
+          <motion.div
+            className="text-3xl sm:text-6xl font-black opacity-10"
+            animate={{ x: [0, 5, 0] }}
+            transition={{ duration: 5, repeat: Infinity }}
+          >
+            Share
+          </motion.div>
+
+        </div>
+
+        {/* MAIN GRID */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 w-full items-start md:items-center">
 
           {/* LEFT SIDE */}
-          <div className="space-y-6">
+          <div className="space-y-6 sm:space-y-6">
 
-            {/* tight heading */}
+            {/* heading */}
             <div className="leading-[0.8]">
-              <h1 className="text-6xl md:text-8xl font-extrabold">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold">
                 Hackweek
               </h1>
-              <h1 className="text-6xl md:text-8xl font-extrabold">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold">
                 2026
               </h1>
             </div>
@@ -214,20 +270,18 @@ export default function Landing() {
             {/* rotating tagline */}
             <RotatingTagline />
 
-            {/* INFO CARDS */}
-            <div className="flex items-center gap-3 flex-wrap">
+            {/* info cards */}
+            <div className="flex flex-wrap items-center gap-3">
 
-              {/* DATE CARD (NO HOVER) */}
-              <div className="w-fit select-none border-4 border-black bg-[#FFD23F] p-5 shadow-[6px_6px_0_black]">
-                <div className="font-bold space-y-1">
+              <div className="w-fit select-none border-4 border-black bg-[#FFD23F] p-4 sm:p-5 shadow-[6px_6px_0_black]">
+                <div className="font-bold space-y-1 text-sm sm:text-base">
                   <p>July 6th – July 12th</p>
                   <p>7 Days of Building</p>
                 </div>
               </div>
 
-              {/* INFO CARD (NO HOVER) */}
-              <div className="w-fit select-none border-4 border-black bg-[#FFD23F] p-5 shadow-[6px_6px_0_black]">
-                <div className="font-bold space-y-1">
+              <div className="w-fit select-none border-4 border-black bg-[#FFD23F] p-4 sm:p-5 shadow-[6px_6px_0_black]">
+                <div className="font-bold space-y-1 text-sm sm:text-base">
                   <p>Build & collaborate</p>
                   <p>Exciting Challenges</p>
                 </div>
@@ -235,28 +289,25 @@ export default function Landing() {
 
             </div>
 
-            {/* LOGIN BUTTON CENTERED */}
-            <div className="flex justify-start pl-2 mt-4">
+            {/* CTA */}
+            <div className="flex justify-center md:justify-start mt-4">
               <Link
                 to="/login"
-                className="border-4 border-black bg-[#00B7FF] px-6 py-5 font-extrabold shadow-[6px_6px_0_black] transition-all duration-150 hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
+                className="border-4 border-black bg-[#00B7FF] px-6 py-4 sm:py-5 font-extrabold shadow-[6px_6px_0_black] transition-all duration-150 hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
               >
                 Login
               </Link>
             </div>
 
-            {/* small extra info strip */}
-          
           </div>
 
-          {/* RIGHT SIDE - 3D HERO */}
-          <div className="relative h-[70vh] overflow-hidden shadow-[10px_10px_0_black] hidden md:block">
-            <div className="scale-125 origin-center w-full h-full">
-              <spline-viewer
-                url="https://prod.spline.design/cfVf9fOnUjYYPFif/scene.splinecode"
-                className="w-full h-full"
-              />
-            </div>
+          {/* RIGHT SIDE - 3D CUBE */}
+          <div className="relative h-[65vh] sm:h-[55vh] md:h-[70vh] overflow-hidden shadow-[6px_6px_0_black]">
+            <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[5, 5, 5]} intensity={2} />
+              <RubiksCube />
+            </Canvas>
           </div>
 
         </div>

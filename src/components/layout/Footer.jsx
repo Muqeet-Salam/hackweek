@@ -165,14 +165,6 @@ export default function Footer() {
                 <Phone className="h-4 w-4" />
                 Muqeet: +91 9959525751
               </a>
-
-              <a
-                href="tel:+911875291629"
-                className="flex items-center gap-2 hover:underline"
-              >
-                <Phone className="h-4 w-4" />
-                Inayat: +91 
-              </a>
             </div>
           </div>
 
