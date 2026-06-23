@@ -5,81 +5,81 @@ import { useAuthStore } from "../store/authstore";
 import Button from "../components/ui/Button";
 import { Link } from "react-router-dom";
 
-// const SAMPLE_CHALLENGES = [
-//   {
-//     challengeId: "neo-brutalist-components",
-//     eventId: "hackweek-2026",
-//     title: "Custom Neo-Brutalist Component Library",
-//     slug: "neo-brutalist-components",
-//     description: "Build a highly polished, fully accessible Neo-Brutalist react component library featuring buttons, cards, modals, and inputs.",
-//     category: "Frontend",
-//     difficulty: "Easy",
-//     technologies: ["React", "Tailwind CSS", "Framer Motion"],
-//     points: 100,
-//     requirements: [
-//       "Create accessible components conforming to WAI-ARIA guidelines.",
-//       "Include standard components: Button, Card, Modal, and Input.",
-//       "Design using Neo-Brutalist guidelines: thick black borders, flat colors, offset shadows."
-//     ],
-//     resources: [
-//       "https://brutalistwebsites.com",
-//       "https://tailwindcss.com"
-//     ],
-//     startDate: new Date().toISOString(),
-//     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-//     participantsCount: 0,
-//     status: "active",
-//     createdAt: new Date().toISOString()
-//   },
-//   {
-//     challengeId: "realtime-board",
-//     eventId: "hackweek-2026",
-//     title: "Realtime Collaboration Board",
-//     slug: "realtime-board",
-//     description: "Develop a collaborative dashboard where multiple developers can share, code, and chat in real-time using WebSockets or Firestore.",
-//     category: "Fullstack",
-//     difficulty: "Medium",
-//     technologies: ["React", "Firebase", "WebSockets"],
-//     points: 250,
-//     requirements: [
-//       "Realtime canvas drawing or block creation.",
-//       "Multiplayer support with active user indicators (avatars, active cursors).",
-//       "Chat widget integration for real-time discussion."
-//     ],
-//     resources: [
-//       "https://firebase.google.com/docs/firestore"
-//     ],
-//     startDate: new Date().toISOString(),
-//     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-//     participantsCount: 0,
-//     status: "active",
-//     createdAt: new Date().toISOString()
-//   },
-//   {
-//     challengeId: "decentralized-tracker",
-//     eventId: "hackweek-2026",
-//     title: "Decentralized Open Source Tracker",
-//     slug: "decentralized-tracker",
-//     description: "Build a dashboard to monitor and verify open-source contributions automatically from GitHub webhook events and allocate reward tokens.",
-//     category: "Web3/Backend",
-//     difficulty: "Hard",
-//     technologies: ["Node.js", "GitHub API", "Solidity"],
-//     points: 500,
-//     requirements: [
-//       "Integrate GitHub webhooks for pull request monitoring.",
-//       "Implement automatic contribution validation rules.",
-//       "Simulate smart contract token allocation based on contribution values."
-//     ],
-//     resources: [
-//       "https://docs.github.com/en/webhooks"
-//     ],
-//     startDate: new Date().toISOString(),
-//     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-//     participantsCount: 0,
-//     status: "active",
-//     createdAt: new Date().toISOString()
-//   }
-// ];
+const SAMPLE_CHALLENGES = [
+  {
+    challengeId: "neo-brutalist-components",
+    eventId: "hackweek-2026",
+    title: "Custom Neo-Brutalist Component Library",
+    slug: "neo-brutalist-components",
+    description: "Build a highly polished, fully accessible Neo-Brutalist react component library featuring buttons, cards, modals, and inputs.",
+    category: "Frontend",
+    difficulty: "Easy",
+    technologies: ["React", "Tailwind CSS", "Framer Motion"],
+    points: 100,
+    requirements: [
+      "Create accessible components conforming to WAI-ARIA guidelines.",
+      "Include standard components: Button, Card, Modal, and Input.",
+      "Design using Neo-Brutalist guidelines: thick black borders, flat colors, offset shadows."
+    ],
+    resources: [
+      "https://brutalistwebsites.com",
+      "https://tailwindcss.com"
+    ],
+    startDate: new Date().toISOString(),
+    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    participantsCount: 0,
+    status: "active",
+    createdAt: new Date().toISOString()
+  },
+  {
+    challengeId: "realtime-board",
+    eventId: "hackweek-2026",
+    title: "Realtime Collaboration Board",
+    slug: "realtime-board",
+    description: "Develop a collaborative dashboard where multiple developers can share, code, and chat in real-time using WebSockets or Firestore.",
+    category: "Fullstack",
+    difficulty: "Medium",
+    technologies: ["React", "Firebase", "WebSockets"],
+    points: 250,
+    requirements: [
+      "Realtime canvas drawing or block creation.",
+      "Multiplayer support with active user indicators (avatars, active cursors).",
+      "Chat widget integration for real-time discussion."
+    ],
+    resources: [
+      "https://firebase.google.com/docs/firestore"
+    ],
+    startDate: new Date().toISOString(),
+    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    participantsCount: 0,
+    status: "active",
+    createdAt: new Date().toISOString()
+  },
+  {
+    challengeId: "decentralized-tracker",
+    eventId: "hackweek-2026",
+    title: "Decentralized Open Source Tracker",
+    slug: "decentralized-tracker",
+    description: "Build a dashboard to monitor and verify open-source contributions automatically from GitHub webhook events and allocate reward tokens.",
+    category: "Web3/Backend",
+    difficulty: "Hard",
+    technologies: ["Node.js", "GitHub API", "Solidity"],
+    points: 500,
+    requirements: [
+      "Integrate GitHub webhooks for pull request monitoring.",
+      "Implement automatic contribution validation rules.",
+      "Simulate smart contract token allocation based on contribution values."
+    ],
+    resources: [
+      "https://docs.github.com/en/webhooks"
+    ],
+    startDate: new Date().toISOString(),
+    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    participantsCount: 0,
+    status: "active",
+    createdAt: new Date().toISOString()
+  }
+];
 
 export default function Challenges() {
   const user = useAuthStore((state) => state.user);
