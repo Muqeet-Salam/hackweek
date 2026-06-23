@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithPopup, signOut, GithubAuthProvider } from "firebase/auth";
+import { signInWithPopup, signOut, GithubAuthProvider, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import Button from "../components/ui/Button";
@@ -70,7 +70,8 @@ export default function Register() {
       // 1. GitHub OAuth
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const github = result.additionalUserInfo?.profile;
+      const additionalInfo = getAdditionalUserInfo(result);
+      const github = additionalInfo?.profile;
       const githubUsername = github?.login || user.displayName || "";
       const email = form.email.trim().toLowerCase();
 
@@ -96,7 +97,7 @@ export default function Register() {
         ...form,
         participantType,
         githubUsername,
-        githubAvatar: user.photoURL || "",
+        githubAvatar: github?.avatar_url || user.photoURL || "",
         githubProfile: github?.html_url || "",
         uid: user.uid,
         email,
@@ -210,6 +211,12 @@ export default function Register() {
 
           {/* SUBMIT */}
           <div className="pt-4">
+            {error && (
+              <p className="text-sm text-red-500 font-bold mb-3">
+                {error}
+              </p>
+            )}
+
             {!canSubmit && (
               <p className="text-sm text-red-500 font-medium mb-2">
                 Fill all required fields (*) to continue

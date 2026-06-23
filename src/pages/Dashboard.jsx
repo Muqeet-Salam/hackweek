@@ -1,33 +1,6 @@
-import { useEffect, useState } from "react";
 import Card from "../components/ui/Card";
 import { useAuthStore } from "../store/authstore";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
 import { Link } from "react-router-dom";
-
-const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-const formatDate = (value) => {
-  if (!value) return "Unknown";
-
-  return new Date(value).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-const formatRelativeDays = (value) => {
-  if (!value) return "Unknown";
-
-  const date = new Date(value);
-  const days = Math.max(
-    1,
-    Math.floor((Date.now() - date.getTime()) / MS_PER_DAY)
-  );
-
-  return `${days} day${days === 1 ? "" : "s"} ago`;
-};
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
