@@ -28,7 +28,7 @@ export default function Leaderboard() {
           if (leaderboardSnap.exists()) {
             const data = leaderboardSnap.data();
             setRankings(data.rankings || []);
-            setPublishedAt(data.publishedAt || null);
+            setPublishedAt(data.lastUpdated || data.publishedAt || null);
           }
         }
       } catch (err) {
@@ -99,8 +99,8 @@ export default function Leaderboard() {
           Live leaderboard tracking submissions and total scores for HackWeek 2026.
         </p>
         {publishedAt && (
-          <p className="text-xs font-semibold mt-3 text-white/80">
-            Last Updated: {formatDate(publishedAt)}
+          <p className="text-xs font-semibold mt-2 text-white/80">
+            Last Updated: <strong>{formatDate(publishedAt)}</strong>
           </p>
         )}
       </div>
@@ -116,11 +116,11 @@ export default function Leaderboard() {
         <div className="border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b-4 border-black bg-[#FFF8E7] text-black">
-                <th className="py-4 px-6 font-black text-lg border-r-2 border-black w-24">Rank</th>
-                <th className="py-4 px-6 font-black text-lg border-r-2 border-black">Builder</th>
-                <th className="py-4 px-6 font-black text-lg border-r-2 border-black hidden sm:table-cell">Affiliation</th>
-                <th className="py-4 px-6 font-black text-lg text-right w-36">Total Points</th>
+              <tr className="border-b-4 border-black bg-[#FFF8E7] text-black text-sm sm:text-base">
+                <th className="py-3 sm:py-4 px-3 sm:px-6 font-black border-r-2 border-black w-16 sm:w-24 text-center">Rank</th>
+                <th className="py-3 sm:py-4 px-3 sm:px-6 font-black border-r-2 border-black">Builder</th>
+                <th className="py-3 sm:py-4 px-3 sm:px-6 font-black border-r-2 border-black hidden sm:table-cell">Affiliation</th>
+                <th className="py-3 sm:py-4 px-3 sm:px-6 font-black text-right w-24 sm:w-36">Total Points</th>
               </tr>
             </thead>
             <tbody>
@@ -135,9 +135,9 @@ export default function Leaderboard() {
                     }`}
                   >
                     {/* Rank */}
-                    <td className="py-4 px-6 font-black text-xl border-r-2 border-black align-middle text-center w-24">
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 font-black border-r-2 border-black align-middle text-center w-16 sm:w-24">
                       <span
-                        className={`inline-flex items-center justify-center w-10 h-10 border-2 border-black font-black ${getRankBadgeColor(
+                        className={`inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border-2 border-black font-black text-sm sm:text-base ${getRankBadgeColor(
                           item.rank
                         )} shadow-[2px_2px_0_black]`}
                       >
@@ -146,11 +146,11 @@ export default function Leaderboard() {
                     </td>
 
                     {/* Builder Name */}
-                    <td className="py-4 px-6 border-r-2 border-black align-middle font-bold text-lg text-black">
-                      <div className="flex items-center gap-2">
-                        <span>{item.fullName}</span>
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 border-r-2 border-black align-middle font-bold text-sm sm:text-lg text-black">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate max-w-[120px] sm:max-w-none">{item.fullName}</span>
                         {isCurrentUser && (
-                          <span className="border-2 border-black bg-[#7AE582] text-black text-[10px] font-black px-1.5 py-0.5 uppercase tracking-wide shadow-[1px_1px_0_black]">
+                          <span className="border-2 border-black bg-[#7AE582] text-[#111111] text-[8px] sm:text-[10px] font-black px-1 sm:px-1.5 py-0.5 uppercase tracking-wide shadow-[1px_1px_0_black]">
                             You
                           </span>
                         )}
@@ -158,13 +158,14 @@ export default function Leaderboard() {
                     </td>
 
                     {/* Affiliation */}
-                    <td className="py-4 px-6 border-r-2 border-black align-middle font-semibold text-gray-700 hidden sm:table-cell text-sm">
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 border-r-2 border-black align-middle font-semibold text-gray-700 hidden sm:table-cell text-sm">
                       {item.collegeName || "Individual"}
                     </td>
 
                     {/* Total Points */}
-                    <td className="py-4 px-6 text-right font-black text-2xl text-[#FF5D8F] align-middle w-36">
-                      {item.points !== undefined ? item.points : (item.totalPoints !== undefined ? item.totalPoints : 0)} <span className="text-xs text-black font-extrabold">PTS</span>
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 text-right font-black text-base sm:text-2xl text-[#FF5D8F] align-middle w-24 sm:w-36">
+                      {item.points !== undefined ? item.points : (item.totalPoints !== undefined ? item.totalPoints : 0)}{" "}
+                      <span className="text-[10px] sm:text-xs text-black font-extrabold">PTS</span>
                     </td>
                   </tr>
                 );
