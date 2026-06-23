@@ -22,6 +22,11 @@ export default function Dashboard() {
       try {
         setLoading(true);
 
+        // 0. Fetch Scores Go Live Status
+        const settingsRef = doc(db, "settings", "general");
+        const settingsSnap = await getDoc(settingsRef);
+        const scoresLive = settingsSnap.exists() ? settingsSnap.data().scoresLive === true : false;
+
         // 1. Fetch user's submissions
         const subQuery = query(
           collection(db, "submissions"),
@@ -36,20 +41,22 @@ export default function Dashboard() {
 
         // 2. Fetch leaderboard rank
         let userRank = "--";
-        const leaderboardRef = doc(db, "leaderboard", "hackweek-2026");
-        const leaderboardSnap = await getDoc(leaderboardRef);
-        
-        if (leaderboardSnap.exists()) {
-          const data = leaderboardSnap.data();
-          const ranking = data.rankings?.find(r => r.userId === user.uid);
-          if (ranking) {
-            userRank = `#${ranking.rank}`;
+        if (scoresLive) {
+          const leaderboardRef = doc(db, "leaderboard", "hackweek-2026");
+          const leaderboardSnap = await getDoc(leaderboardRef);
+          
+          if (leaderboardSnap.exists()) {
+            const data = leaderboardSnap.data();
+            const ranking = data.rankings?.find(r => r.userId === user.uid);
+            if (ranking) {
+              userRank = `#${ranking.rank}`;
+            }
           }
         }
 
         setStats({
           projectsSubmitted: projectsCount,
-          pointsEarned: points,
+          pointsEarned: scoresLive ? points : "--",
           rank: userRank
         });
 

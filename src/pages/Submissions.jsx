@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useAuthStore } from "../store/authstore";
 import Card from "../components/ui/Card";
@@ -11,6 +11,7 @@ export default function Submissions() {
   const [submissions, setSubmissions] = useState([]);
   const [challengesMap, setChallengesMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isScoresLive, setIsScoresLive] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,6 +19,12 @@ export default function Submissions() {
 
       try {
         setLoading(true);
+
+        // 0. Fetch Scores Go Live Status
+        const settingsRef = doc(db, "settings", "general");
+        const settingsSnap = await getDoc(settingsRef);
+        const scoresLive = settingsSnap.exists() ? settingsSnap.data().scoresLive === true : false;
+        setIsScoresLive(scoresLive);
 
         // 1. Fetch user's submissions
         const subQuery = query(
@@ -65,6 +72,7 @@ export default function Submissions() {
     switch (status?.toLowerCase()) {
       case "reviewed":
       case "approved":
+      case "verified":
         return { bg: "#7AE582", text: "Reviewed" };
       case "rejected":
         return { bg: "#FF595E", text: "Rejected" };
@@ -185,7 +193,7 @@ export default function Submissions() {
                 </div>
 
                 {/* Score & Feedback Section */}
-                {(sub.score > 0 || sub.feedback || sub.status?.toLowerCase() === "reviewed") && (
+                {isScoresLive && (sub.score > 0 || sub.feedback || sub.status?.toLowerCase() === "reviewed" || sub.status?.toLowerCase() === "verified" || sub.status?.toLowerCase() === "approved") && (
                   <div className="mt-6 border-4 border-black bg-[#FFF8E7] p-4 shadow-[4px_4px_0_black] space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-extrabold text-sm uppercase">Evaluation Score</span>

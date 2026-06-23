@@ -197,56 +197,65 @@ export default function Challenges() {
 
           <div className="space-y-6">
             <h2 className="text-2xl font-black mb-2">Available Tracks</h2>
-            {challenges.map((c) => {
-              const isSubmitted = submittedChallengeIds.has(c.challengeId);
+            {challenges.length === 0 ? (
+              <div className="border-4 border-black bg-white p-8 shadow-[8px_8px_0_black] text-center space-y-4 my-8">
+                <h3 className="text-3xl font-black">No Challenges Available</h3>
+                <p className="font-bold text-gray-700 max-w-md mx-auto">
+                   Challenges will be posted soon. Check back later for exciting tracks to build!
+                </p>
+              </div>
+            ) : (
+              challenges.map((c) => {
+                const isSubmitted = submittedChallengeIds.has(c.challengeId);
 
-              return (
-                <div
-                  key={c.challengeId}
-                  onClick={() => {
-                    setSelectedChallenge(c);
-                    setActiveView("details");
-                    setActiveTab("description");
-                    setError("");
-                    setSuccess(false);
-                  }}
-                  className="cursor-pointer border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-hidden transition-transform hover:-translate-y-0.5"
-                >
-                  {/* CARD HEADER / TOGGLE TAB */}
-                  <div className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FFF8E7] text-black hover:bg-white transition-colors">
-                    <div className="space-y-2 text-left w-full md:w-auto">
-                      <div className="flex items-center justify-start gap-2 flex-wrap text-left">
-                        <span
-                          className="border-2 border-black px-2.5 py-0.5 text-xs font-bold text-black"
-                          style={{ backgroundColor: getDifficultyColor(c.difficulty) }}
-                        >
-                          {c.difficulty}
-                        </span>
-                        <span className="text-xs uppercase font-extrabold tracking-wider px-2 py-0.5 border-2 border-black bg-black text-white">
-                          {c.category}
-                        </span>
+                return (
+                  <div
+                    key={c.challengeId}
+                    onClick={() => {
+                      setSelectedChallenge(c);
+                      setActiveView("details");
+                      setActiveTab("description");
+                      setError("");
+                      setSuccess(false);
+                    }}
+                    className="cursor-pointer border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-hidden transition-transform hover:-translate-y-0.5"
+                  >
+                    {/* CARD HEADER / TOGGLE TAB */}
+                    <div className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FFF8E7] text-black hover:bg-white transition-colors">
+                      <div className="space-y-2 text-left w-full md:w-auto">
+                        <div className="flex items-center justify-start gap-2 flex-wrap text-left">
+                          <span
+                            className="border-2 border-black px-2.5 py-0.5 text-xs font-bold text-black"
+                            style={{ backgroundColor: getDifficultyColor(c.difficulty) }}
+                          >
+                            {c.difficulty}
+                          </span>
+                          <span className="text-xs uppercase font-extrabold tracking-wider px-2 py-0.5 border-2 border-black bg-black text-white">
+                            {c.category}
+                          </span>
+                        </div>
+                        <h3 className="text-2xl font-black text-left">{c.title}</h3>
                       </div>
-                      <h3 className="text-2xl font-black text-left">{c.title}</h3>
-                    </div>
 
-                    <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto text-left">
-                      <span className="font-extrabold text-sm border-2 border-black px-3 py-1 bg-white text-black shadow-[2px_2px_0_black]">
-                        {c.points} PTS
-                      </span>
-                      {isSubmitted ? (
-                        <span className="border-2 border-black bg-[#7AE582] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
-                          ✓ SUBMITTED
+                      <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto text-left">
+                        <span className="font-extrabold text-sm border-2 border-black px-3 py-1 bg-white text-black shadow-[2px_2px_0_black]">
+                          {c.points} PTS
                         </span>
-                      ) : (
-                        <span className="border-2 border-black bg-[#00B7FF] text-white text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
-                          OPEN →
-                        </span>
-                      )}
+                        {isSubmitted ? (
+                          <span className="border-2 border-black bg-[#7AE582] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
+                            ✓ SUBMITTED
+                          </span>
+                        ) : (
+                          <span className="border-2 border-black bg-[#00B7FF] text-white text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
+                            OPEN →
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </>
       ) : (
@@ -381,7 +390,9 @@ export default function Challenges() {
                 <div className="space-y-6">
                   {isSelectedSubmitted ? (
                     <div className="border-4 border-black bg-[#7AE582] p-6 shadow-[6px_6px_0_black] text-center">
-                      <h4 className="text-2xl font-black">Solution Already Submitted!</h4>
+                      <h4 className="text-2xl font-black">
+                        {success ? "Solution Submitted!" : "Solution Already Submitted!"}
+                      </h4>
                       <p className="mt-2 font-medium text-sm md:text-base">
                         You have successfully shipped your project. You can check score evaluations, rank, and reviewer feedback on the{" "}
                         <Link to="/submissions" className="underline font-bold text-black">
