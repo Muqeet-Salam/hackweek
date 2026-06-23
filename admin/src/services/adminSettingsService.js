@@ -8,7 +8,7 @@ export const getSettings = async () => {
   if (snapshot.exists()) {
     return snapshot.data();
   }
-  return { challengesLive: false };
+  return { challengesLive: false, scoresLive: false };
 };
 
 export const updateSettings = async (newSettings) => {
@@ -20,7 +20,7 @@ export const subscribeToSettings = (callback) => {
     if (snapshot.exists()) {
       callback(snapshot.data());
     } else {
-      callback({ challengesLive: false });
+      callback({ challengesLive: false, scoresLive: false });
     }
   });
 };

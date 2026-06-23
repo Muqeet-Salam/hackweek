@@ -5,6 +5,7 @@ import AdminSubmissions from "./pages/AdminSubmissions";
 import AdminRegistrations from "./pages/AdminRegistrations";
 import AdminAccess from "./pages/AdminAccess";
 import AdminLogin from "./pages/AdminLogin";
+import AdminLeaderboard from "./pages/AdminLeaderboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       { path: "challenges", element: <AdminChallenges /> },
       { path: "submissions", element: <AdminSubmissions /> },
       { path: "registrations", element: <AdminRegistrations /> },
+      { path: "leaderboard", element: <AdminLeaderboard /> },
       { path: "admins", element: <AdminAccess /> },
     ],
   },

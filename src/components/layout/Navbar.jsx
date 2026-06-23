@@ -82,6 +82,9 @@ export default function Navbar() {
               <Link className="border-4 border-black bg-[#FFD23F] px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/challenges">
                 Challenges
               </Link>
+              <Link className="border-4 border-black bg-[#FF8A00] text-white px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/leaderboard">
+                Leaderboard
+              </Link>
 
               <Link
                 to="/profile"
@@ -156,6 +159,13 @@ export default function Navbar() {
                   Challenges
                 </Link>
                 <Link
+                  to="/leaderboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-[#FF8A00] text-white px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Leaderboard
+                </Link>
+                <Link
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
                   className="border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_black]"
@@ -179,4 +189,4 @@ export default function Navbar() {
       ) : null}
     </header>
   );
-}
+}
