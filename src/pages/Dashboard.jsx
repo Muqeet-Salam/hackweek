@@ -4,6 +4,8 @@ import { useAuthStore } from "../store/authstore";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { Link } from "react-router-dom";
+import { subscribeToSettings } from "../services/settingsService";
+import { getUserSubmissions } from "../services/submissionService";
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -31,6 +33,31 @@ const formatRelativeDays = (value) => {
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
+  const [submissions, setSubmissions] = useState([]);
+  const [isScoresLive, setIsScoresLive] = useState(false);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (user) {
+        const data = await getUserSubmissions(user.uid);
+        setSubmissions(data);
+      }
+    };
+    fetchSubmissions();
+
+    const unsubscribeSettings = subscribeToSettings((settings) => {
+      setIsScoresLive(settings.scoresLive === true);
+    });
+
+    return () => unsubscribeSettings();
+  }, [user]);
+
+  const totalPoints = submissions.reduce((total, sub) => {
+    if (sub.status === "verified" && sub.score) {
+      return total + Number(sub.score);
+    }
+    return total;
+  }, 0);
 
   if (!user) return null;
 
@@ -52,12 +79,14 @@ export default function Dashboard() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
         <Card>
-          <h2 className="text-3xl font-extrabold">0</h2>
+          <h2 className="text-3xl font-extrabold">{submissions.length}</h2>
           <p className="font-bold">Projects Submitted</p>
         </Card>
 
         <Card>
-          <h2 className="text-3xl font-extrabold">0</h2>
+          <h2 className="text-3xl font-extrabold">
+            {isScoresLive ? totalPoints : "Pending"}
+          </h2>
           <p className="font-bold">Points Earned</p>
         </Card>
 
