@@ -51,6 +51,20 @@ export default function Dashboard() {
           View Profile
         </Link>
 
+        <Link
+          to="/challenges"
+          className="border-4 border-black bg-[#FF5D8F] px-6 py-3 font-extrabold shadow-[6px_6px_0_black]"
+        >
+          View Challenges
+        </Link>
+
+        <Link
+          to="/submissions"
+          className="border-4 border-black bg-[#FFD23F] px-6 py-3 font-extrabold shadow-[6px_6px_0_black]"
+        >
+          View Submissions
+        </Link>
+
       </section>
       {/* EVENT STATUS */}
       <section className="border-4 border-black bg-white p-6 shadow-[10px_10px_0_black]">
