@@ -10,6 +10,7 @@ import Profile from "../pages/Profile.jsx";
 import Challenges from "../pages/Challenges.jsx";
 import Submissions from "../pages/Submissions.jsx";
 import Leaderboard from "../pages/Leaderboard.jsx";
+import Rules from "../pages/Rules.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: "challenges", element: (<ProtectedRoute><Challenges /></ProtectedRoute>), },
       { path: "submissions", element: (<ProtectedRoute><Submissions /></ProtectedRoute>), },
       { path: "leaderboard", element: (<ProtectedRoute><Leaderboard /></ProtectedRoute>), },
+      { path: "rules", element: <Rules />, },
     ],
   },
 ]);

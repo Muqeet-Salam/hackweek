@@ -52,6 +52,11 @@ export default function Footer() {
 
   const legalLinks = [
     {
+      to: "/rules",
+      label: "Rules & Regulations",
+      external: false,
+    },
+    {
       href: "https://cbitosc.github.io/",
       label: "Official Website",
       external: true,
@@ -195,18 +200,28 @@ export default function Footer() {
             ))}
           </h1>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-6">
             {legalLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm hover:underline"
-              >
-                {link.label}
-                <ExternalLink className="h-3 w-3" />
-              </a>
+              link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm hover:underline"
+                >
+                  {link.label}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="flex items-center gap-1 text-sm hover:underline"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
         </div>
