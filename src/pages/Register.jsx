@@ -12,6 +12,10 @@ export default function Register() {
   const [participantType, setParticipantType] = useState("student");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    email: "",
+    phone: ""
+  });
 
   const [form, setForm] = useState({
     fullName: "",
@@ -39,14 +43,18 @@ export default function Register() {
     form.collegeName &&
     form.rollNumber &&
     form.degree &&
-    form.year;
+    form.year &&
+    !fieldErrors.email &&
+    !fieldErrors.phone;
 
   const isProfessionalValid =
     form.fullName &&
     form.email &&
     form.phone &&
     form.companyName &&
-    form.role;
+    form.role &&
+    !fieldErrors.email &&
+    !fieldErrors.phone;
 
   const canSubmit =
     participantType === "student"
@@ -55,7 +63,28 @@ export default function Register() {
 
   // ---------------- HANDLER ----------------
   const handleChange = (field) => (e) => {
-    setForm({ ...form, [field]: e.target.value });
+    const val = e.target.value;
+    setForm({ ...form, [field]: val });
+
+    // Live email validation
+    if (field === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (val && !emailRegex.test(val.trim())) {
+        setFieldErrors((prev) => ({ ...prev, email: "Invalid email format" }));
+      } else {
+        setFieldErrors((prev) => ({ ...prev, email: "" }));
+      }
+    }
+
+    // Live phone validation
+    if (field === "phone") {
+      const digitsOnly = val.replace(/\D/g, "");
+      if (val && !/^\d{10}$/.test(digitsOnly)) {
+        setFieldErrors((prev) => ({ ...prev, phone: "Phone number must be exactly 10 digits" }));
+      } else {
+        setFieldErrors((prev) => ({ ...prev, phone: "" }));
+      }
+    }
   };
 
   // ---------------- REGISTER FLOW ----------------
@@ -63,28 +92,38 @@ export default function Register() {
     e.preventDefault();
     if (!canSubmit || loading) return;
 
+    const email = form.email.trim().toLowerCase();
+    const phone = form.phone.trim();
+
+    // 1. Phone number validation (must be exactly 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+      setFieldErrors((prev) => ({ ...prev, phone: "Phone number must be exactly 10 digits." }));
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
+      setFieldErrors({ email: "", phone: "" });
 
-      // 1. GitHub OAuth
+      // 2. Prevent duplicate email BEFORE sign in popup
+      const emailRef = doc(db, "emails", email);
+      const existingEmail = await getDoc(emailRef);
+      if (existingEmail.exists()) {
+        setFieldErrors((prev) => ({ ...prev, email: "This email is already registered. Use login instead." }));
+        setLoading(false);
+        return;
+      }
+
+      // 3. GitHub OAuth
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const additionalInfo = getAdditionalUserInfo(result);
       const github = additionalInfo?.profile;
       const githubUsername = github?.login || user.displayName || "";
-      const email = form.email.trim().toLowerCase();
 
-      // 2. Prevent duplicate email
-      const emailRef = doc(db, "emails", email);
-      const existingEmail = await getDoc(emailRef);
-      if (existingEmail.exists()) {
-        await signOut(auth);
-        setError("This email is already registered. Use login instead.");
-        return;
-      }
-
-      // 3. Prevent duplicate registration by uid
+      // 4. Prevent duplicate registration by uid
       const userRef = doc(db, "users", user.uid);
       const existingUser = await getDoc(userRef);
       if (existingUser.exists()) {
@@ -92,9 +131,10 @@ export default function Register() {
         return;
       }
 
-      // 4. Save user data and fast lookup mappings
+      // 5. Save user data and fast lookup mappings
       await setDoc(userRef, {
         ...form,
+        phone,
         participantType,
         githubUsername,
         githubAvatar: github?.avatar_url || user.photoURL || "",
@@ -112,7 +152,7 @@ export default function Register() {
         uid: user.uid,
       });
 
-      // 5. Redirect
+      // 6. Redirect
       navigate("/dashboard");
     } catch (err) {
       console.log("Register error:", err);
@@ -146,8 +186,8 @@ export default function Register() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <Input label="Full Name *" value={form.fullName} onChange={handleChange("fullName")} />
-              <Input label="Email *" value={form.email} onChange={handleChange("email")} />
-              <Input label="Phone *" value={form.phone} onChange={handleChange("phone")} />
+              <Input label="Email *" value={form.email} onChange={handleChange("email")} type="email" error={fieldErrors.email} />
+              <Input label="Phone *" value={form.phone} onChange={handleChange("phone")} type="tel" maxLength={10} placeholder="10-digit phone number" error={fieldErrors.phone} />
             </div>
           </section>
 
@@ -239,16 +279,25 @@ export default function Register() {
 }
 
 /* ---------------- INPUT ---------------- */
-function Input({ label, value, onChange }) {
+function Input({ label, value, onChange, type = "text", error, ...rest }) {
   return (
     <div>
       <label className="block font-bold mb-2">{label}</label>
 
       <input
+        type={type}
         value={value}
         onChange={onChange}
-        className="w-full border-4 border-black bg-[#FFF8E7] px-4 py-3 font-medium outline-none focus:bg-white"
+        className={`w-full border-4 border-black bg-[#FFF8E7] px-4 py-3 font-medium outline-none focus:bg-white ${
+          error ? "border-[#FF595E]" : ""
+        }`}
+        {...rest}
       />
+      {error && (
+        <p className="text-sm text-[#FF595E] font-black mt-2">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
