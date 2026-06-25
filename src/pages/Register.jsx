@@ -14,7 +14,9 @@ export default function Register() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
     email: "",
-    phone: ""
+    phone: "",
+    linkedin: "",
+    portfolio: ""
   });
 
   const [form, setForm] = useState({
@@ -45,7 +47,9 @@ export default function Register() {
     form.degree &&
     form.year &&
     !fieldErrors.email &&
-    !fieldErrors.phone;
+    !fieldErrors.phone &&
+    !fieldErrors.linkedin &&
+    !fieldErrors.portfolio;
 
   const isProfessionalValid =
     form.fullName &&
@@ -54,7 +58,9 @@ export default function Register() {
     form.companyName &&
     form.role &&
     !fieldErrors.email &&
-    !fieldErrors.phone;
+    !fieldErrors.phone &&
+    !fieldErrors.linkedin &&
+    !fieldErrors.portfolio;
 
   const canSubmit =
     participantType === "student"
@@ -85,6 +91,26 @@ export default function Register() {
         setFieldErrors((prev) => ({ ...prev, phone: "" }));
       }
     }
+
+    // Live LinkedIn URL validation
+    if (field === "linkedin") {
+      const linkedinRegex = /^(https?:\/\/)?(www\.)?([a-z]{2}\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/;
+      if (val && !linkedinRegex.test(val.trim())) {
+        setFieldErrors((prev) => ({ ...prev, linkedin: "Invalid LinkedIn URL (must contain linkedin.com/in/)" }));
+      } else {
+        setFieldErrors((prev) => ({ ...prev, linkedin: "" }));
+      }
+    }
+
+    // Live portfolio URL validation
+    if (field === "portfolio") {
+      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+      if (val && !urlRegex.test(val.trim())) {
+        setFieldErrors((prev) => ({ ...prev, portfolio: "Invalid URL format" }));
+      } else {
+        setFieldErrors((prev) => ({ ...prev, portfolio: "" }));
+      }
+    }
   };
 
   // ---------------- REGISTER FLOW ----------------
@@ -102,10 +128,28 @@ export default function Register() {
       return;
     }
 
+    // 2. LinkedIn URL validation (optional but validated if provided)
+    if (form.linkedin.trim()) {
+      const linkedinRegex = /^(https?:\/\/)?(www\.)?([a-z]{2}\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/;
+      if (!linkedinRegex.test(form.linkedin.trim())) {
+        setFieldErrors((prev) => ({ ...prev, linkedin: "Invalid LinkedIn URL (must contain linkedin.com/in/)" }));
+        return;
+      }
+    }
+
+    // 3. Portfolio URL validation (optional but validated if provided)
+    if (form.portfolio.trim()) {
+      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+      if (!urlRegex.test(form.portfolio.trim())) {
+        setFieldErrors((prev) => ({ ...prev, portfolio: "Invalid URL format" }));
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       setError("");
-      setFieldErrors({ email: "", phone: "" });
+      setFieldErrors({ email: "", phone: "", linkedin: "", portfolio: "" });
 
       // 2. Prevent duplicate email BEFORE sign in popup
       const emailRef = doc(db, "emails", email);
@@ -244,8 +288,8 @@ export default function Register() {
             <h2 className="text-2xl font-extrabold mb-4">Links</h2>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Input label="LinkedIn" value={form.linkedin} onChange={handleChange("linkedin")} />
-              <Input label="Portfolio" value={form.portfolio} onChange={handleChange("portfolio")} />
+              <Input label="LinkedIn" value={form.linkedin} onChange={handleChange("linkedin")} error={fieldErrors.linkedin} type="url" placeholder="https://linkedin.com/in/username" />
+              <Input label="Portfolio" value={form.portfolio} onChange={handleChange("portfolio")} error={fieldErrors.portfolio} type="url" placeholder="https://portfolio.com" />
             </div>
           </section>
 
