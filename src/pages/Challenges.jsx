@@ -3,12 +3,14 @@ import { collection, doc, getDocs, getDoc, setDoc, query, where } from "firebase
 import { db } from "../firebase/config";
 import { useAuthStore } from "../store/authstore";
 import Button from "../components/ui/Button";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 
 
 export default function Challenges() {
   const user = useAuthStore((state) => state.user);
+  const navigate = useNavigate();
+  const { slug } = useParams();
 
   const [challenges, setChallenges] = useState([]);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
@@ -86,6 +88,45 @@ export default function Challenges() {
 
     loadData();
   }, [user]);
+
+  useEffect(() => {
+    if (challenges.length > 0) {
+      if (slug) {
+        const found = challenges.find(c => c.slug === slug || c.challengeId === slug);
+        if (found) {
+          setTimeout(() => {
+            setSelectedChallenge(found);
+            setActiveView("details");
+            
+            const existingSub = userSubmissions[found.challengeId];
+            if (existingSub) {
+              setGithubRepo(existingSub.githubRepo || "");
+              setProjectUrl(existingSub.projectUrl || "");
+              setDescription(existingSub.description || "");
+              setTechnologiesUsed(
+                Array.isArray(existingSub.technologiesUsed)
+                  ? existingSub.technologiesUsed.join(", ")
+                  : existingSub.technologiesUsed || ""
+              );
+            } else {
+              setGithubRepo("");
+              setProjectUrl("");
+              setDescription("");
+              setTechnologiesUsed("");
+            }
+          }, 0);
+        } else {
+          setTimeout(() => {
+            setActiveView("list");
+          }, 0);
+        }
+      } else {
+        setTimeout(() => {
+          setActiveView("list");
+        }, 0);
+      }
+    }
+  }, [slug, challenges, userSubmissions]);
 
 
   const handleSubmission = async (e) => {
@@ -315,29 +356,11 @@ export default function Challenges() {
                     <div
                       key={c.challengeId}
                       onClick={() => {
-                        setSelectedChallenge(c);
-                        setActiveView("details");
+                        navigate("/challenges/" + (c.slug || c.challengeId));
                         setActiveTab("description");
                         setError("");
                         setSuccess(false);
                         setForceShowForm(false);
-                        
-                        const existingSub = userSubmissions[c.challengeId];
-                        if (existingSub) {
-                          setGithubRepo(existingSub.githubRepo || "");
-                          setProjectUrl(existingSub.projectUrl || "");
-                          setDescription(existingSub.description || "");
-                          setTechnologiesUsed(
-                            Array.isArray(existingSub.technologiesUsed)
-                              ? existingSub.technologiesUsed.join(", ")
-                              : existingSub.technologiesUsed || ""
-                          );
-                        } else {
-                          setGithubRepo("");
-                          setProjectUrl("");
-                          setDescription("");
-                          setTechnologiesUsed("");
-                        }
                       }}
                       className="cursor-pointer border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-hidden transition-transform hover:-translate-y-1 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col justify-between h-full"
                     >
@@ -396,7 +419,7 @@ export default function Challenges() {
             {/* BACK BUTTON */}
             <div>
               <button
-                onClick={() => setActiveView("list")}
+                onClick={() => navigate("/challenges")}
                 className="border-4 border-black bg-[#FFF8E7] px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-white transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               >
                 ← Back to Challenges

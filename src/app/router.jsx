@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: (<ProtectedRoute><Dashboard /></ProtectedRoute>), },
       { path: "register", element: (<Register />), },
       { path: "profile", element: (<ProtectedRoute><Profile /></ProtectedRoute>), },
-      { path: "challenges", element: (<ProtectedRoute><Challenges /></ProtectedRoute>), },
+      { path: "challenges/:slug?", element: (<ProtectedRoute><Challenges /></ProtectedRoute>), },
       { path: "submissions", element: (<ProtectedRoute><Submissions /></ProtectedRoute>), },
       { path: "leaderboard", element: (<ProtectedRoute><Leaderboard /></ProtectedRoute>), },
       { path: "rules", element: <Rules />, },
