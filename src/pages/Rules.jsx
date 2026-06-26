@@ -69,7 +69,7 @@ export default function Rules() {
             </li>
             <li className="flex gap-2.5 items-start">
               <span className="text-red-500 font-extrabold text-xl">•</span>
-              <span><strong>Submission Cap:</strong> Once a project solution is submitted for a challenge, it is recorded in the database. <strong>Submissions cannot be re-submitted or updated</strong> once created. Verify all files and descriptions before clicking submit.</span>
+              <span><strong>Submission Cap:</strong> Once a project solution is submitted for a challenge, it is recorded in the database. <strong>Submissions can be re-submitted or updated</strong> as many times as you like. Submitting again will update your existing submission with the new details.</span>
             </li>
             <li className="flex gap-2.5 items-start">
               <span className="text-red-500 font-extrabold text-xl">•</span>

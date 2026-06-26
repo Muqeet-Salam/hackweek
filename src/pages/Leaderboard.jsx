@@ -10,6 +10,8 @@ export default function Leaderboard() {
   const [publishedAt, setPublishedAt] = useState(null);
   const [isScoresLive, setIsScoresLive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -124,7 +126,10 @@ export default function Leaderboard() {
               </tr>
             </thead>
             <tbody>
-              {rankings.map((item) => {
+              {(() => {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const paginatedRankings = rankings.slice(startIndex, startIndex + itemsPerPage);
+                return paginatedRankings.map((item) => {
                 const isCurrentUser = user && item.userId === user.uid;
 
                 return (
@@ -169,9 +174,39 @@ export default function Leaderboard() {
                     </td>
                   </tr>
                 );
-              })}
+              })})()}
             </tbody>
           </table>
+          {(() => {
+            const totalPages = Math.ceil(rankings.length / itemsPerPage);
+            return totalPages > 1 && (
+              <div className="flex justify-between items-center bg-[#FFF8E7] border-t-4 border-black p-4 font-bold select-none">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="px-4 py-2 border-4 border-black bg-[#00B7FF] text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition shadow-[2px_2px_0_black] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
+                >
+                  Previous
+                </button>
+                <span className="text-sm sm:text-base">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="px-4 py-2 border-4 border-black bg-[#00B7FF] text-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition shadow-[2px_2px_0_black] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
+                >
+                  Next
+                </button>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

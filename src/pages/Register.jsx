@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithPopup, signOut, GithubAuthProvider, getAdditionalUserInfo } from "firebase/auth";
+import { signInWithPopup, GithubAuthProvider, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db } from "../firebase/config";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, increment } from "firebase/firestore";
 import Button from "../components/ui/Button";
 
 export default function Register() {
@@ -104,7 +104,7 @@ export default function Register() {
 
     // Live portfolio URL validation
     if (field === "portfolio") {
-      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
       if (val && !urlRegex.test(val.trim())) {
         setFieldErrors((prev) => ({ ...prev, portfolio: "Invalid URL format" }));
       } else {
@@ -139,7 +139,7 @@ export default function Register() {
 
     // 3. Portfolio URL validation (optional but validated if provided)
     if (form.portfolio.trim()) {
-      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+      const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
       if (!urlRegex.test(form.portfolio.trim())) {
         setFieldErrors((prev) => ({ ...prev, portfolio: "Invalid URL format" }));
         return;
@@ -195,6 +195,10 @@ export default function Register() {
       await setDoc(emailRef, {
         uid: user.uid,
       });
+
+      // Increment registration count
+      const countsRef = doc(db, "counts", "registrations");
+      await setDoc(countsRef, { count: increment(1) }, { merge: true });
 
       // 6. Redirect
       navigate("/dashboard");

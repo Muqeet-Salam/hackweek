@@ -52,33 +52,33 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-6">
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8">
 
         {/* LEFT SIDE */}
-        <div className="border-4 border-black bg-[#00B7FF] p-8 shadow-[10px_10px_0_black]">
+        <div className="border-4 border-black bg-[#00B7FF] p-6 sm:p-8 shadow-[8px_8px_0_black] sm:shadow-[10px_10px_0_black] order-2 md:order-1">
 
-          <p className="font-black text-sm tracking-[0.3em]">
+          <p className="font-black text-xs sm:text-sm tracking-[0.3em]">
             COSC PRESENTS
           </p>
 
-          <h1 className="text-6xl font-extrabold mt-4">
+          <h1 className="text-5xl sm:text-6xl font-extrabold mt-4">
             HACKWEEK
             <br />
             2026
           </h1>
 
-          <p className="mt-6 text-lg font-bold">
+          <p className="mt-6 text-base sm:text-lg font-bold">
             July 6 - July 12
           </p>
 
-          <p className="mt-3 font-medium">
+          <p className="mt-3 text-sm sm:text-base font-medium">
             One week of coding challenges,
             open source contributions,
             leaderboards and rewards.
           </p>
 
-          <div className="mt-8 space-y-3 font-bold">
+          <div className="mt-8 space-y-3 text-sm sm:text-base font-bold">
             <p>✓ Daily Challenges</p>
             <p>✓ Open Source Tracks</p>
             <p>✓ Public Profiles</p>
@@ -88,13 +88,13 @@ export default function Login() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="border-4 border-black bg-white p-8 shadow-[10px_10px_0_black] flex flex-col justify-center">
+        <div className="border-4 border-black bg-white p-6 sm:p-8 shadow-[8px_8px_0_black] sm:shadow-[10px_10px_0_black] flex flex-col justify-center order-1 md:order-2">
 
-          <h2 className="text-4xl font-extrabold">
+          <h2 className="text-3xl sm:text-4xl font-extrabold">
             Login
           </h2>
 
-          <p className="mt-3 font-medium">
+          <p className="mt-3 text-sm sm:text-base font-medium">
             Sign in with GitHub to access
             your HackWeek dashboard.
           </p>
@@ -111,7 +111,7 @@ export default function Login() {
             </Button>
           </div>
 
-          <p className="mt-4 text-sm font-medium">
+          <p className="mt-4 text-xs sm:text-sm font-medium">
             New participant?
             Register first before logging in.
           </p>

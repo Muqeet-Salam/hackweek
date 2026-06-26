@@ -131,7 +131,7 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-extrabold">
+          <h2 className="text-base sm:text-2xl font-extrabold break-all">
             {email || "N/A"}
           </h2>
           <p className="font-bold mt-1">Email</p>

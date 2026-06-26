@@ -26,6 +26,9 @@ export default function Challenges() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [userSubmissions, setUserSubmissions] = useState({});
+  const [forceShowForm, setForceShowForm] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
 
   useEffect(() => {
     const loadData = async () => {
@@ -38,21 +41,41 @@ export default function Challenges() {
         const live = settingsSnap.exists() ? settingsSnap.data().challengesLive === true : false;
         setIsLive(live);
 
-        // 2. Fetch Challenges
+        // 2. Fetch User Submissions to track completed challenges and pre-populate submissions
+        const subQuery = query(collection(db, "submissions"), where("userId", "==", user.uid));
+        const subSnap = await getDocs(subQuery);
+        const completedIds = new Set();
+        const submissionsMap = {};
+        subSnap.docs.forEach((doc) => {
+          const data = doc.data();
+          completedIds.add(data.challengeId);
+          submissionsMap[data.challengeId] = data;
+        });
+        setSubmittedChallengeIds(completedIds);
+        setUserSubmissions(submissionsMap);
+
+        // 3. Fetch Challenges
         const challengesRef = collection(db, "challenges");
         const snap = await getDocs(challengesRef);
         const list = snap.docs.map(d => d.data());
 
         setChallenges(list);
         if (list.length > 0) {
-          setSelectedChallenge(list[0]);
+          const firstChallenge = list[0];
+          setSelectedChallenge(firstChallenge);
+          
+          const existingSub = submissionsMap[firstChallenge.challengeId];
+          if (existingSub) {
+            setGithubRepo(existingSub.githubRepo || "");
+            setProjectUrl(existingSub.projectUrl || "");
+            setDescription(existingSub.description || "");
+            setTechnologiesUsed(
+              Array.isArray(existingSub.technologiesUsed)
+                ? existingSub.technologiesUsed.join(", ")
+                : existingSub.technologiesUsed || ""
+            );
+          }
         }
-
-        // 3. Fetch User Submissions to track completed challenges
-        const subQuery = query(collection(db, "submissions"), where("userId", "==", user.uid));
-        const subSnap = await getDocs(subQuery);
-        const completedIds = new Set(subSnap.docs.map(d => d.data().challengeId));
-        setSubmittedChallengeIds(completedIds);
 
       } catch (err) {
         console.error("Error loading challenges:", err);
@@ -63,6 +86,7 @@ export default function Challenges() {
 
     loadData();
   }, [user]);
+
 
   const handleSubmission = async (e) => {
     e.preventDefault();
@@ -86,7 +110,7 @@ export default function Challenges() {
         .map(t => t.trim())
         .filter(t => t.length > 0);
 
-      await setDoc(subRef, {
+      const submissionData = {
         submissionId,
         eventId: selectedChallenge.eventId || "hackweek-2026",
         challengeId: selectedChallenge.challengeId,
@@ -101,16 +125,17 @@ export default function Challenges() {
         feedback: "",
         submittedAt: new Date().toISOString(),
         reviewedAt: null
-      });
+      };
+
+      await setDoc(subRef, submissionData);
 
       setSuccess(true);
       setSubmittedChallengeIds(prev => new Set([...prev, selectedChallenge.challengeId]));
-
-      // Clear Form
-      setGithubRepo("");
-      setProjectUrl("");
-      setDescription("");
-      setTechnologiesUsed("");
+      setUserSubmissions(prev => ({
+        ...prev,
+        [selectedChallenge.challengeId]: submissionData
+      }));
+      setForceShowForm(false);
 
     } catch (err) {
       console.error("Submission failed:", err);
@@ -124,7 +149,6 @@ export default function Challenges() {
     switch (diff?.toLowerCase()) {
       case "easy":
       case "beginner":
-      case "biginner":
         return "#7AE582";
       case "medium":
       case "intermediate":
@@ -181,6 +205,32 @@ export default function Challenges() {
         : (typeof selectedChallenge.technologies === "string" && selectedChallenge.technologies.trim() ? selectedChallenge.technologies.split(",").map(t => t.trim()) : []))
     : [];
 
+  const formatDifficulty = (diff) => {
+    if (!diff) return "";
+    const lower = diff.toLowerCase();
+    if (lower === "easy" || lower === "beginner") return "Beginner";
+    if (lower === "medium" || lower === "intermediate") return "Intermediate";
+    if (lower === "hard" || lower === "advanced") return "Advanced";
+    return diff.charAt(0).toUpperCase() + diff.slice(1);
+  };
+
+  const filteredChallenges = challenges.filter(c => {
+    if (selectedDifficulty === "All") return true;
+    const challengeDiff = c.difficulty?.toLowerCase();
+    const filterDiff = selectedDifficulty.toLowerCase();
+    
+    if (filterDiff === "beginner") {
+      return challengeDiff === "beginner" || challengeDiff === "easy";
+    }
+    if (filterDiff === "intermediate") {
+      return challengeDiff === "intermediate" || challengeDiff === "medium";
+    }
+    if (filterDiff === "advanced") {
+      return challengeDiff === "advanced" || challengeDiff === "hard";
+    }
+    return challengeDiff === filterDiff;
+  });
+
   const isSelectedSubmitted = selectedChallenge ? submittedChallengeIds.has(selectedChallenge.challengeId) : false;
 
   return (
@@ -195,8 +245,45 @@ export default function Challenges() {
             </p>
           </div>
 
+          {/* FILTERS */}
+          <div className="flex flex-wrap items-center gap-3 border-4 border-black bg-white p-5 shadow-[6px_6px_0_black]">
+            <span className="font-extrabold text-sm sm:text-base mr-2 uppercase tracking-wider">Difficulty:</span>
+            <button
+              onClick={() => setSelectedDifficulty("All")}
+              className={`px-4 py-2 font-extrabold border-3 border-black shadow-[3px_3px_0_black] transition-transform hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm cursor-pointer ${
+                selectedDifficulty === "All" ? "bg-[#FFD23F] text-black" : "bg-[#FFF8E7] text-black hover:bg-white"
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty("Beginner")}
+              className={`px-4 py-2 font-extrabold border-3 border-black shadow-[3px_3px_0_black] transition-transform hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm cursor-pointer ${
+                selectedDifficulty === "Beginner" ? "bg-[#7AE582] text-black" : "bg-[#FFF8E7] text-black hover:bg-white"
+              }`}
+            >
+              Beginner
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty("Intermediate")}
+              className={`px-4 py-2 font-extrabold border-3 border-black shadow-[3px_3px_0_black] transition-transform hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm cursor-pointer ${
+                selectedDifficulty === "Intermediate" ? "bg-[#FFD23F] text-black" : "bg-[#FFF8E7] text-black hover:bg-white"
+              }`}
+            >
+              Intermediate
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty("Advanced")}
+              className={`px-4 py-2 font-extrabold border-3 border-black shadow-[3px_3px_0_black] transition-transform hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm cursor-pointer ${
+                selectedDifficulty === "Advanced" ? "bg-[#FF595E] text-black" : "bg-[#FFF8E7] text-black hover:bg-white"
+              }`}
+            >
+              Advanced
+            </button>
+          </div>
+
           <div className="space-y-6">
-            <h2 className="text-2xl font-black mb-2">Available Tracks</h2>
+            <h2 className="text-2xl font-black">Available Tracks</h2>
             {challenges.length === 0 ? (
               <div className="border-4 border-black bg-white p-8 shadow-[8px_8px_0_black] text-center space-y-4 my-8">
                 <h3 className="text-3xl font-black">No Challenges Available</h3>
@@ -204,42 +291,87 @@ export default function Challenges() {
                    Challenges will be posted soon. Check back later for exciting tracks to build!
                 </p>
               </div>
+            ) : filteredChallenges.length === 0 ? (
+              <div className="border-4 border-black bg-white p-8 shadow-[8px_8px_0_black] text-center space-y-4 my-8">
+                <h3 className="text-3xl font-black">No Matches Found</h3>
+                <p className="font-bold text-gray-700 max-w-md mx-auto">
+                   No challenges match your selected filters. Try choosing different options or clearing the filters!
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedDifficulty("All");
+                  }}
+                  className="border-4 border-black bg-[#00B7FF] text-white font-extrabold px-6 py-2.5 shadow-[4px_4px_0_black] hover:bg-opacity-95 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none cursor-pointer"
+                >
+                  Reset Filters
+                </button>
+              </div>
             ) : (
-              challenges.map((c) => {
-                const isSubmitted = submittedChallengeIds.has(c.challengeId);
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredChallenges.map((c) => {
+                  const isSubmitted = submittedChallengeIds.has(c.challengeId);
 
-                return (
-                  <div
-                    key={c.challengeId}
-                    onClick={() => {
-                      setSelectedChallenge(c);
-                      setActiveView("details");
-                      setActiveTab("description");
-                      setError("");
-                      setSuccess(false);
-                    }}
-                    className="cursor-pointer border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-hidden transition-transform hover:-translate-y-0.5"
-                  >
-                    {/* CARD HEADER / TOGGLE TAB */}
-                    <div className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FFF8E7] text-black hover:bg-white transition-colors">
-                      <div className="space-y-2 text-left w-full md:w-auto">
-                        <div className="flex items-center justify-start gap-2 flex-wrap text-left">
-                          <span
-                            className="border-2 border-black px-2.5 py-0.5 text-xs font-bold text-black"
-                            style={{ backgroundColor: getDifficultyColor(c.difficulty) }}
-                          >
-                            {c.difficulty}
-                          </span>
-                          <span className="text-xs uppercase font-extrabold tracking-wider px-2 py-0.5 border-2 border-black bg-black text-white">
-                            {c.category}
-                          </span>
-                        </div>
-                        <h3 className="text-2xl font-black text-left">{c.title}</h3>
+                  return (
+                    <div
+                      key={c.challengeId}
+                      onClick={() => {
+                        setSelectedChallenge(c);
+                        setActiveView("details");
+                        setActiveTab("description");
+                        setError("");
+                        setSuccess(false);
+                        setForceShowForm(false);
+                        
+                        const existingSub = userSubmissions[c.challengeId];
+                        if (existingSub) {
+                          setGithubRepo(existingSub.githubRepo || "");
+                          setProjectUrl(existingSub.projectUrl || "");
+                          setDescription(existingSub.description || "");
+                          setTechnologiesUsed(
+                            Array.isArray(existingSub.technologiesUsed)
+                              ? existingSub.technologiesUsed.join(", ")
+                              : existingSub.technologiesUsed || ""
+                          );
+                        } else {
+                          setGithubRepo("");
+                          setProjectUrl("");
+                          setDescription("");
+                          setTechnologiesUsed("");
+                        }
+                      }}
+                      className="cursor-pointer border-4 border-black bg-white shadow-[8px_8px_0_black] overflow-hidden transition-transform hover:-translate-y-1 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex flex-col justify-between h-full"
+                    >
+                      {/* CARD HEADER */}
+                      <div className="p-4 bg-[#FFF8E7] border-b-4 border-black flex justify-between items-center gap-2">
+                        <span className="text-xs uppercase font-extrabold tracking-wider px-2 py-0.5 border-2 border-black bg-black text-white truncate max-w-[150px]">
+                          {c.category}
+                        </span>
+                        <span className="font-extrabold text-sm border-2 border-black px-2.5 py-0.5 bg-white text-black shadow-[2px_2px_0_black] whitespace-nowrap">
+                          {c.points} PTS
+                        </span>
                       </div>
 
-                      <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto text-left">
-                        <span className="font-extrabold text-sm border-2 border-black px-3 py-1 bg-white text-black shadow-[2px_2px_0_black]">
-                          {c.points} PTS
+                      {/* CARD BODY */}
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-black text-left leading-tight line-clamp-2">
+                            {c.title}
+                          </h3>
+                          {c.description && (
+                            <p className="text-sm font-medium text-gray-600 line-clamp-3 text-left leading-relaxed">
+                              {c.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* CARD FOOTER */}
+                      <div className="p-4 border-t-4 border-black flex justify-between items-center bg-gray-50">
+                        <span
+                          className="border-2 border-black px-2.5 py-0.5 text-xs font-bold text-black"
+                          style={{ backgroundColor: getDifficultyColor(c.difficulty) }}
+                        >
+                          {formatDifficulty(c.difficulty)}
                         </span>
                         {isSubmitted ? (
                           <span className="border-2 border-black bg-[#7AE582] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
@@ -252,9 +384,9 @@ export default function Challenges() {
                         )}
                       </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             )}
           </div>
         </>
@@ -285,7 +417,7 @@ export default function Challenges() {
                     className="border-2 border-black px-3.5 py-1 text-sm font-bold text-black shadow-[2px_2px_0_black]"
                     style={{ backgroundColor: getDifficultyColor(selectedChallenge.difficulty) }}
                   >
-                    {selectedChallenge.difficulty}
+                    {formatDifficulty(selectedChallenge.difficulty)}
                   </span>
                   <div className="border-4 border-black bg-[#FFD23F] text-black font-extrabold px-5 py-2.5 text-xl shadow-[4px_4px_0_black]">
                     {selectedChallenge.points} Points
@@ -388,21 +520,33 @@ export default function Challenges() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {isSelectedSubmitted ? (
+                  {isSelectedSubmitted && !forceShowForm ? (
                     <div className="border-4 border-black bg-[#7AE582] p-6 shadow-[6px_6px_0_black] text-center">
                       <h4 className="text-2xl font-black">
                         {success ? "Solution Submitted!" : "Solution Already Submitted!"}
                       </h4>
-                      <p className="mt-2 font-medium text-sm md:text-base">
+                      <p className="mt-2 font-medium text-sm md:text-base mb-6">
                         You have successfully shipped your project. You can check score evaluations, rank, and reviewer feedback on the{" "}
                         <Link to="/submissions" className="underline font-bold text-black">
                           Submissions Dashboard
                         </Link>.
                       </p>
+                      <button
+                        onClick={() => {
+                          setForceShowForm(true);
+                          setSuccess(false);
+                          setError("");
+                        }}
+                        className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-gray-100 transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black cursor-pointer inline-block"
+                      >
+                        Submit Solution Again
+                      </button>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmission} className="space-y-5">
-                      <h2 className="text-2xl font-black border-b-4 border-black pb-3">Submit Project Solution</h2>
+                      <h2 className="text-2xl font-black border-b-4 border-black pb-3">
+                        {isSelectedSubmitted ? "Resubmit Project Solution" : "Submit Project Solution"}
+                      </h2>
 
                       {error && (
                         <div className="border-2 border-black bg-[#FF595E] p-3 text-sm font-bold text-black shadow-[2px_2px_0_black]">
@@ -463,13 +607,29 @@ export default function Challenges() {
                         />
                       </div>
 
-                      <Button
-                        type="submit"
-                        disabled={submitting}
-                        className="w-full mt-2"
-                      >
-                        {submitting ? "Submitting..." : "Submit Project Solution"}
-                      </Button>
+                      <div className="flex gap-4 mt-2 flex-wrap">
+                        <Button
+                          type="submit"
+                          disabled={submitting}
+                          className="flex-1 min-w-[200px]"
+                        >
+                          {submitting ? "Submitting..." : (isSelectedSubmitted ? "Resubmit Solution" : "Submit Project Solution")}
+                        </Button>
+                        {isSelectedSubmitted && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForceShowForm(false);
+                              setSuccess(false);
+                              setError("");
+                            }}
+                            disabled={submitting}
+                            className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-gray-100 transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                     </form>
                   )}
                 </div>
