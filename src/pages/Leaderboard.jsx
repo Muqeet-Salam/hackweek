@@ -17,21 +17,16 @@ export default function Leaderboard() {
     const fetchLeaderboard = async () => {
       try {
         setLoading(true);
-        // 1. Fetch settings to see if scores are live
-        const settingsRef = doc(db, "settings", "general");
-        const settingsSnap = await getDoc(settingsRef);
-        const scoresLive = settingsSnap.exists() ? settingsSnap.data().scoresLive === true : false;
-        setIsScoresLive(scoresLive);
-
-        if (scoresLive) {
-          // 2. Fetch published rankings
-          const leaderboardRef = doc(db, "leaderboard", "hackweek-2026");
-          const leaderboardSnap = await getDoc(leaderboardRef);
-          if (leaderboardSnap.exists()) {
-            const data = leaderboardSnap.data();
-            setRankings(data.rankings || []);
-            setPublishedAt(data.lastUpdated || data.publishedAt || null);
-          }
+        // Fetch published rankings directly from the leaderboard document
+        const leaderboardRef = doc(db, "leaderboard", "hackweek-2026");
+        const leaderboardSnap = await getDoc(leaderboardRef);
+        if (leaderboardSnap.exists()) {
+          const data = leaderboardSnap.data();
+          setRankings(data.rankings || []);
+          setPublishedAt(data.lastUpdated || data.publishedAt || null);
+          setIsScoresLive(true);
+        } else {
+          setIsScoresLive(false);
         }
       } catch (err) {
         console.error("Error fetching leaderboard:", err);
