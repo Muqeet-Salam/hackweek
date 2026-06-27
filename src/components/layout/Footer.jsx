@@ -177,7 +177,7 @@ export default function Footer() {
                 className="flex items-center gap-2 hover:underline"
               >
                 <Phone className="h-4 w-4" />
-                Muqeet: +91 63097 50200
+                Ashwith: +91 63097 50200
               </a>
             </div>
           </div>
