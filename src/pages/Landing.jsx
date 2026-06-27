@@ -86,7 +86,7 @@ const fadeUp = {
 
 const timeline = [
   {
-    date: "June 22",
+    date: "June 27",
     title: "Registration Opens",
     description: "Create your profile and secure your spot.",
     icon: CalendarCheck,
