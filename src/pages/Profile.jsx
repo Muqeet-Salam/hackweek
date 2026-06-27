@@ -4,8 +4,6 @@ import { useAuthStore } from "../store/authstore";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
 const formatDate = (value) => {
   if (!value) return "Unknown";
 
@@ -14,18 +12,6 @@ const formatDate = (value) => {
     day: "numeric",
     year: "numeric",
   });
-};
-
-const formatRelativeDays = (value) => {
-  if (!value) return "Unknown";
-
-  const date = new Date(value);
-  const days = Math.max(
-    1,
-    Math.floor((Date.now() - date.getTime()) / MS_PER_DAY)
-  );
-
-  return `${days} day${days === 1 ? "" : "s"} ago`;
 };
 
 export default function Dashboard() {
@@ -145,7 +131,7 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-extrabold">
+          <h2 className="text-base sm:text-2xl font-extrabold break-all">
             {email || "N/A"}
           </h2>
           <p className="font-bold mt-1">Email</p>

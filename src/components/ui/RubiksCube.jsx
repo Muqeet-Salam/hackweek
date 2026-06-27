@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -249,22 +249,24 @@ export const RubiksCube = () => {
 
   return (
     <group ref={groupRef} scale={0.75}>
-      {stateRef.current.cubies.map((cubie) => (
+      {CUBIES.map((c, index) => (
         <CubieMesh 
-          key={cubie.id} 
-          cubie={cubie} 
-          materials={getMaterials(cubie.initX, cubie.initY, cubie.initZ)} 
+          key={c.id} 
+          cubieIndex={index} 
+          stateRef={stateRef}
+          materials={getMaterials(c.initX, c.initY, c.initZ)} 
         />
       ))}
     </group>
   );
 };
 
-const CubieMesh = ({ cubie, materials }) => {
+const CubieMesh = ({ cubieIndex, stateRef, materials }) => {
   const meshRef = useRef();
   
   useFrame(() => {
     if (meshRef.current) {
+      const cubie = stateRef.current.cubies[cubieIndex];
       // Multiply by slightly more than CUBE_SIZE to create beautiful visible seams
       meshRef.current.position.copy(cubie.pos).multiplyScalar(CUBE_SIZE * 1.02);
       meshRef.current.quaternion.copy(cubie.rot);

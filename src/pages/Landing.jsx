@@ -1,34 +1,29 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence  } from "framer-motion";
-import SplineCore from "../components/SplineCore";
+import { motion } from "framer-motion";
 import RubiksCube from "../components/ui/RubiksCube";
 import { Canvas } from "@react-three/fiber";
 import {
   Award,
   CalendarCheck,
-  CalendarDays,
-  CheckCircle2,
   Clock,
   Code2,
   Gift,
   Rocket,
   ShieldCheck,
-  Sparkles,
   Trophy,
   Users,
 } from "lucide-react";
 import { useAuthStore } from "../store/authstore";
 
-export function RotatingTagline() {
-  const texts = [
-    "A week-long sprint for serious builders.",
-    "Join collaborators. Ship real projects.",
-    "Turn ideas into production-ready systems.",
-  ];
+const TAGLINE_TEXTS = [
+  "A week-long sprint for serious builders.",
+  "Join collaborators. Ship real projects.",
+  "Turn ideas into production-ready systems.",
+];
 
-  const [index, setIndex] = useState(0);
-  const [display, setDisplay] = useState(texts[0]);
+export function RotatingTagline() {
+  const [display, setDisplay] = useState(TAGLINE_TEXTS[0]);
 
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+-/";
 
@@ -60,10 +55,9 @@ export function RotatingTagline() {
     let timeout;
 
     const run = (i) => {
-      scrambleText(texts[i], () => {
+      scrambleText(TAGLINE_TEXTS[i], () => {
         timeout = setTimeout(() => {
-          const next = (i + 1) % texts.length;
-          setIndex(next);
+          const next = (i + 1) % TAGLINE_TEXTS.length;
           run(next);
         }, 2500); // pause after reveal
       });
@@ -88,31 +82,7 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
-const stats = [
-  { value: "1000+", label: "Participants" },
-  { value: "50+", label: "Challenges" },
-  { value: "₹2L+", label: "Prizes" },
-];
 
-const highlights = [
-  {
-    icon: Code2,
-    title: "Build and collaborate",
-    copy: "Ship real projects with people who actually want to build.",
-    color: "#00B7FF",
-  },
-  {
-    icon: Trophy,
-    title: "Compete & rank up",
-    copy: "Earn points, climb leaderboard, and stand out.",
-    color: "#FFD23F",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Show your proof",
-    copy: "Turn GitHub activity into real-world credibility.",
-  },
-];
 
 const timeline = [
   {

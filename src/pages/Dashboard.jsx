@@ -1,36 +1,70 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 import Card from "../components/ui/Card";
 import { useAuthStore } from "../store/authstore";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
 import { Link } from "react-router-dom";
-
-const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-const formatDate = (value) => {
-  if (!value) return "Unknown";
-
-  return new Date(value).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-const formatRelativeDays = (value) => {
-  if (!value) return "Unknown";
-
-  const date = new Date(value);
-  const days = Math.max(
-    1,
-    Math.floor((Date.now() - date.getTime()) / MS_PER_DAY)
-  );
-
-  return `${days} day${days === 1 ? "" : "s"} ago`;
-};
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
+
+  const [stats, setStats] = useState({
+    projectsSubmitted: 0,
+    pointsEarned: 0,
+    rank: "--"
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      if (!user?.uid) return;
+
+      try {
+        setLoading(true);
+
+        // 1. Fetch user's submissions
+        const subQuery = query(
+          collection(db, "submissions"),
+          where("userId", "==", user.uid)
+        );
+        const subSnap = await getDocs(subQuery);
+        const submissions = subSnap.docs.map(doc => doc.data());
+        const projectsCount = submissions.length;
+
+        // Sum the scores from verified submissions only
+        const verifiedSubmissions = submissions.filter(
+          (sub) => ["verified", "reviewed", "approved"].includes(sub.status?.toLowerCase())
+        );
+        const points = verifiedSubmissions.reduce((sum, sub) => sum + (sub.score || 0), 0);
+
+        // 2. Fetch leaderboard rank if published rankings exist
+        let userRank = "--";
+        const leaderboardRef = doc(db, "leaderboard", "hackweek-2026");
+        const leaderboardSnap = await getDoc(leaderboardRef);
+        
+        if (leaderboardSnap.exists()) {
+          const data = leaderboardSnap.data();
+          const ranking = data.rankings?.find(r => r.userId === user.uid);
+          if (ranking) {
+            userRank = `#${ranking.rank}`;
+          }
+        }
+
+        setStats({
+          projectsSubmitted: projectsCount,
+          pointsEarned: points,
+          rank: userRank
+        });
+
+      } catch (err) {
+        console.error("Error fetching dashboard stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, [user]);
 
   if (!user) return null;
 
@@ -52,17 +86,23 @@ export default function Dashboard() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
         <Card>
-          <h2 className="text-3xl font-extrabold">0</h2>
+          <h2 className="text-3xl font-extrabold">
+            {loading ? "..." : stats.projectsSubmitted}
+          </h2>
           <p className="font-bold">Projects Submitted</p>
         </Card>
 
         <Card>
-          <h2 className="text-3xl font-extrabold">0</h2>
+          <h2 className="text-3xl font-extrabold">
+            {loading ? "..." : stats.pointsEarned}
+          </h2>
           <p className="font-bold">Points Earned</p>
         </Card>
 
         <Card>
-          <h2 className="text-3xl font-extrabold">#--</h2>
+          <h2 className="text-3xl font-extrabold">
+            {loading ? "..." : stats.rank}
+          </h2>
           <p className="font-bold">Leaderboard Rank</p>
         </Card>
 
@@ -76,6 +116,20 @@ export default function Dashboard() {
           className="border-4 border-black bg-[#00B7FF] px-6 py-3 font-extrabold shadow-[6px_6px_0_black]"
         >
           View Profile
+        </Link>
+
+        <Link
+          to="/challenges"
+          className="border-4 border-black bg-[#FF5D8F] px-6 py-3 font-extrabold shadow-[6px_6px_0_black]"
+        >
+          View Challenges
+        </Link>
+
+        <Link
+          to="/submissions"
+          className="border-4 border-black bg-[#FFD23F] px-6 py-3 font-extrabold shadow-[6px_6px_0_black]"
+        >
+          View Submissions
         </Link>
 
       </section>

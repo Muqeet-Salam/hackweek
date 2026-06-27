@@ -80,6 +80,10 @@ export default function Navbar() {
                 Dashboard
               </Link>
 
+              <Link className="border-4 border-black bg-[#FF9F1C] px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/leaderboard">
+                Leaderboard
+              </Link>
+
               <Link
                 to="/profile"
                 className="hidden sm:flex items-center gap-2 border-4 border-black bg-white px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
@@ -144,6 +148,13 @@ export default function Navbar() {
                   className="border-4 border-black bg-[#7AE582] px-4 py-3 shadow-[4px_4px_0_black]"
                 >
                   Dashboard
+                </Link>
+                <Link
+                  to="/leaderboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-4 border-black bg-[#FF9F1C] px-4 py-3 shadow-[4px_4px_0_black]"
+                >
+                  Leaderboard
                 </Link>
                 <Link
                   to="/profile"

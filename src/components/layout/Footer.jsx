@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   FaGithub,
   FaInstagram,
@@ -50,6 +51,11 @@ export default function Footer() {
   ];
 
   const legalLinks = [
+    {
+      to: "/rules",
+      label: "Rules & Regulations",
+      external: false,
+    },
     {
       href: "https://cbitosc.github.io/",
       label: "Official Website",
@@ -172,18 +178,50 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="mt-8 pt-6 border-t border-black/20">
-          <div className="flex justify-center">
-            {legalLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm hover:underline"
+
+          <h1 className="text-6xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] uppercase font-body select-none flex justify-center mb-6">
+            {"HACKWEEK26".split("").map((char, index) => (
+              <motion.span
+                key={index}
+                animate={{
+                  y: [2, -6, 2],
+                  rotate: [-1.5, 1.5, -1.5],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.4,
+                }}
+                className="inline-block text-black"
               >
-                {link.label}
-                <ExternalLink className="h-3 w-3" />
-              </a>
+                {char}
+              </motion.span>
+            ))}
+          </h1>
+
+          <div className="flex justify-center gap-6">
+            {legalLinks.map((link) => (
+              link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm hover:underline"
+                >
+                  {link.label}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="flex items-center gap-1 text-sm hover:underline"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
         </div>
