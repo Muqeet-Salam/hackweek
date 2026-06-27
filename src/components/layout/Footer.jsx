@@ -42,12 +42,12 @@ export default function Footer() {
     { to: "/", label: "Home" },
     { to: "/register", label: "Register" },
     { to: "/profile", label: "Profile" },
-    {
-      href: "https://discord.gg/kCgMv4PePp",
-      label: "Join Discord",
-      external: true,
-      icon: <FaDiscord className="h-4 w-4 mr-1" />,
-    },
+    // {
+    //   href: "https://discord.gg/kCgMv4PePp",
+    //   label: "Join Discord",
+    //   external: true,
+    //   icon: <FaDiscord className="h-4 w-4 mr-1" />,
+    // },
   ];
 
   const legalLinks = [
@@ -165,11 +165,19 @@ export default function Footer() {
               </p>
 
               <a
-                href="tel:+9132659207099"
+                href="tel:+91 9959525751"
                 className="flex items-center gap-2 hover:underline"
               >
                 <Phone className="h-4 w-4" />
                 Muqeet: +91 9959525751
+              </a>
+
+              <a
+                href="tel:+91 63097 50200"
+                className="flex items-center gap-2 hover:underline"
+              >
+                <Phone className="h-4 w-4" />
+                Muqeet: +91 63097 50200
               </a>
             </div>
           </div>
