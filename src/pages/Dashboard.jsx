@@ -144,16 +144,19 @@ export default function Dashboard() {
           Challenges go live on <span className="font-extrabold">July 6th, 2026</span>.
         </p>
 
-        <div className="mt-4 border-4 border-black bg-[#FFF8E7] p-4">
-          <p className="font-bold">
-            Until then:
-          </p>
+        <p className="mt-2 font-medium">
+          All further updates will be posted in the <span className="font-extrabold">Discord server</span>.
+        </p>
 
-          <ul className="mt-2 font-medium space-y-1">
-            <li>• Complete your profile</li>
-            <li>• Explore upcoming challenges</li>
-            <li>• Join community discussions</li>
-          </ul>
+        <div className="mt-6">
+          <a
+            href="https://discord.gg/XaS3YwfDc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block border-4 border-black bg-[#5865F2] px-6 py-3 font-extrabold text-white shadow-[6px_6px_0_black] transition-transform hover:-translate-y-1"
+          >
+            Join Discord Server
+          </a>
         </div>
 
       </section>

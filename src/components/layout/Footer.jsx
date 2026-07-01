@@ -42,12 +42,12 @@ export default function Footer() {
     { to: "/", label: "Home" },
     { to: "/register", label: "Register" },
     { to: "/profile", label: "Profile" },
-    // {
-    //   href: "https://discord.gg/kCgMv4PePp",
-    //   label: "Join Discord",
-    //   external: true,
-    //   icon: <FaDiscord className="h-4 w-4 mr-1" />,
-    // },
+    {
+      href: "https://discord.gg/XaS3YwfDc",
+      label: "Join Discord",
+      external: true,
+      icon: <FaDiscord className="h-4 w-4 mr-1" />,
+    },
   ];
 
   const legalLinks = [
