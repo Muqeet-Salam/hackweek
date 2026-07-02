@@ -82,16 +82,6 @@ export default function Register() {
       }
     }
 
-    // Live phone validation
-    if (field === "phone") {
-      const digitsOnly = val.replace(/\D/g, "");
-      if (val && !/^\d{10}$/.test(digitsOnly)) {
-        setFieldErrors((prev) => ({ ...prev, phone: "Phone number must be exactly 10 digits" }));
-      } else {
-        setFieldErrors((prev) => ({ ...prev, phone: "" }));
-      }
-    }
-
     // Live LinkedIn URL validation
     if (field === "linkedin") {
       const linkedinRegex = /^(https?:\/\/)?(www\.)?([a-z]{2}\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/;
@@ -122,11 +112,6 @@ export default function Register() {
     const phone = form.phone.trim();
 
     // 1. Phone number validation (must be exactly 10 digits)
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(phone)) {
-      setFieldErrors((prev) => ({ ...prev, phone: "Phone number must be exactly 10 digits." }));
-      return;
-    }
 
     // 2. LinkedIn URL validation (optional but validated if provided)
     if (form.linkedin.trim()) {
@@ -235,7 +220,7 @@ export default function Register() {
             <div className="grid md:grid-cols-2 gap-4">
               <Input label="Full Name *" value={form.fullName} onChange={handleChange("fullName")} />
               <Input label="Email *" value={form.email} onChange={handleChange("email")} type="email" error={fieldErrors.email} />
-              <Input label="Phone *" value={form.phone} onChange={handleChange("phone")} type="tel" maxLength={10} placeholder="10-digit phone number" error={fieldErrors.phone} />
+              <Input label="Phone *" value={form.phone} onChange={handleChange("phone")} type="tel" maxLength={10} placeholder="phone number" error={fieldErrors.phone} />
             </div>
           </section>
 
