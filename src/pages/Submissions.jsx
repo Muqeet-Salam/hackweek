@@ -186,6 +186,16 @@ export default function Submissions() {
                         Live Demo ↗
                       </a>
                     )}
+                    {sub.liveDemoUrl && (
+                      <a
+                        href={sub.liveDemoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border-2 border-black bg-[#00B7FF] px-3.5 py-1.5 text-xs font-extrabold text-black shadow-[3px_3px_0_black] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                      >
+                        Live Demo URL ↗
+                      </a>
+                    )}
                   </div>
                 </div>
 

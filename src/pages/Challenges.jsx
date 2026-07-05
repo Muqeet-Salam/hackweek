@@ -23,6 +23,7 @@ export default function Challenges() {
   // Form state
   const [githubRepo, setGithubRepo] = useState("");
   const [projectUrl, setProjectUrl] = useState("");
+  const [liveDemoUrl, setLiveDemoUrl] = useState("");
   const [description, setDescription] = useState("");
   const [technologiesUsed, setTechnologiesUsed] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -70,6 +71,7 @@ export default function Challenges() {
           if (existingSub) {
             setGithubRepo(existingSub.githubRepo || "");
             setProjectUrl(existingSub.projectUrl || "");
+            setLiveDemoUrl(existingSub.liveDemoUrl || "");
             setDescription(existingSub.description || "");
             setTechnologiesUsed(
               Array.isArray(existingSub.technologiesUsed)
@@ -102,6 +104,7 @@ export default function Challenges() {
             if (existingSub) {
               setGithubRepo(existingSub.githubRepo || "");
               setProjectUrl(existingSub.projectUrl || "");
+              setLiveDemoUrl(existingSub.liveDemoUrl || "");
               setDescription(existingSub.description || "");
               setTechnologiesUsed(
                 Array.isArray(existingSub.technologiesUsed)
@@ -111,6 +114,7 @@ export default function Challenges() {
             } else {
               setGithubRepo("");
               setProjectUrl("");
+              setLiveDemoUrl("");
               setDescription("");
               setTechnologiesUsed("");
             }
@@ -158,6 +162,7 @@ export default function Challenges() {
         userId: user.uid,
         githubRepo: githubRepo.trim(),
         projectUrl: projectUrl.trim(),
+        liveDemoUrl: liveDemoUrl.trim(),
         description: description.trim(),
         technologiesUsed: techArray,
         attachments: [],
@@ -597,11 +602,23 @@ export default function Challenges() {
                         </div>
 
                         <div>
+                          <label className="block font-bold mb-1.5 text-sm">Demo Video Link</label>
+                          <input
+                            type="url"
+                            required
+                            value={projectUrl}
+                            onChange={(e) => setProjectUrl(e.target.value)}
+                            placeholder="Youtube or Drive link (make sure to set it to public)"
+                            className="w-full border-4 border-black bg-[#FFF8E7] px-4 py-2.5 font-medium outline-none focus:bg-white"
+                          />
+                        </div>
+
+                        <div>
                           <label className="block font-bold mb-1.5 text-sm">Live Demo URL (Optional)</label>
                           <input
                             type="url"
-                            value={projectUrl}
-                            onChange={(e) => setProjectUrl(e.target.value)}
+                            value={liveDemoUrl}
+                            onChange={(e) => setLiveDemoUrl(e.target.value)}
                             placeholder="https://demo.example.com"
                             className="w-full border-4 border-black bg-[#FFF8E7] px-4 py-2.5 font-medium outline-none focus:bg-white"
                           />
