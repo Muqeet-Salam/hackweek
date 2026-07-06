@@ -278,6 +278,10 @@ export default function Challenges() {
   });
 
   const isSelectedSubmitted = selectedChallenge ? submittedChallengeIds.has(selectedChallenge.challengeId) : false;
+  const selectedSubmission = selectedChallenge ? userSubmissions[selectedChallenge.challengeId] : null;
+  const isSelectedVerified = selectedSubmission
+    ? ["verified", "reviewed", "approved"].includes((selectedSubmission.status || "").toLowerCase())
+    : false;
 
   return (
     <div className="space-y-8 py-4">
@@ -565,10 +569,19 @@ export default function Challenges() {
                           setSuccess(false);
                           setError("");
                         }}
-                        className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-gray-100 transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black cursor-pointer inline-block"
+                        disabled={isSelectedVerified}
+                        aria-disabled={isSelectedVerified}
+                        className={`border-4 border-black px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black inline-block ${
+                          isSelectedVerified ? "bg-gray-300 cursor-not-allowed border-gray-400 text-gray-700" : "bg-white hover:bg-gray-100"
+                        }`}
                       >
                         Submit Solution Again
                       </button>
+                      {isSelectedVerified && (
+                        <p className="mt-3 text-sm font-medium text-gray-700">
+                          This submission is verified - resubmissions are disabled.
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <form onSubmit={handleSubmission} className="space-y-5">
