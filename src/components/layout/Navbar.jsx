@@ -68,12 +68,6 @@ export default function Navbar() {
             </Link>
           ) : null}
 
-          {!user ? (
-            <Link className="border-4 border-black bg-[#00B7FF] px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/register">
-              Register
-            </Link>
-          ) : null}
-
           {user ? (
             <>
               <Link className="border-4 border-black bg-[#7AE582] px-3 py-2 shadow-[4px_4px_0_black] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none" to="/dashboard">
@@ -131,13 +125,6 @@ export default function Navbar() {
                   className="border-4 border-black bg-[#00B7FF] px-4 py-3 shadow-[4px_4px_0_black]"
                 >
                   Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="border-4 border-black bg-[#00B7FF] px-4 py-3 shadow-[4px_4px_0_black]"
-                >
-                  Register
                 </Link>
               </>
             ) : (

@@ -87,8 +87,8 @@ const fadeUp = {
 const timeline = [
   {
     date: "June 27",
-    title: "Registration Opens",
-    description: "Create your profile and secure your spot.",
+    title: "Registration Closed",
+    description: "Existing participants can still sign in and continue building.",
     icon: CalendarCheck,
     color: "#00B7FF",
   },
@@ -124,7 +124,7 @@ const faqs = [
   {
     question: "Is HackWeek free?",
     answer:
-      "Yes. Registration and participation are completely free.",
+      "Participation is free for registered participants.",
   },
   {
     question: "Do I need a team?",
@@ -142,8 +142,8 @@ const steps = [
   {
     number: "01",
     icon: Users,
-    title: "Register",
-    desc: "Sign in with GitHub and create your HackWeek profile.",
+    title: "Sign In",
+    desc: "Use your registered GitHub account to access HackWeek.",
   },
   {
     number: "02",

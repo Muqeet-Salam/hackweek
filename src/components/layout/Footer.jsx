@@ -40,7 +40,6 @@ export default function Footer() {
 
   const quickLinks = [
     { to: "/", label: "Home" },
-    { to: "/register", label: "Register" },
     { to: "/profile", label: "Profile" },
     {
       href: "https://discord.gg/XaS3YwfDc",

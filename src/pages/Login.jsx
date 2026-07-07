@@ -14,12 +14,14 @@ export default function Login() {
   const setProfile = useAuthStore((state) => state.setProfile);
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     if (loading) return;
 
     try {
       setLoading(true);
+      setError("");
 
       // 1. GitHub OAuth login (creates Firebase session)
       const result = await loginWithGitHub();
@@ -32,7 +34,7 @@ export default function Login() {
       // ❌ NOT REGISTERED → destroy session + redirect
       if (!snap.exists()) {
         await signOut(auth);
-        navigate("/register");
+        setError("Registrations are closed. This GitHub account is not registered.");
         return;
       }
 
@@ -46,6 +48,7 @@ export default function Login() {
 
     } catch (err) {
       console.log("Login error:", err);
+      setError("Unable to log in right now. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -99,6 +102,12 @@ export default function Login() {
             your HackWeek dashboard.
           </p>
 
+          {error ? (
+            <p className="mt-4 border-4 border-black bg-[#FF595E] px-4 py-3 text-sm font-bold text-white shadow-[4px_4px_0_black]">
+              {error}
+            </p>
+          ) : null}
+
           <div className="mt-8">
             <Button
               onClick={handleLogin}
@@ -112,8 +121,7 @@ export default function Login() {
           </div>
 
           <p className="mt-4 text-xs sm:text-sm font-medium">
-            New participant?
-            Register first before logging in.
+            Only pre-registered participants can log in.
           </p>
 
         </div>
