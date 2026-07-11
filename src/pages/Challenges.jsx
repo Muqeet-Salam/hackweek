@@ -137,6 +137,11 @@ export default function Challenges() {
     e.preventDefault();
     if (!githubRepo.trim() || submitting) return;
 
+    if (!canResubmitSelectedChallenge) {
+      setError("Submission period has ended. Only on-hold submissions can be updated.");
+      return;
+    }
+
     if (!githubRepo.trim().toLowerCase().includes("github.com/")) {
       setError("Please enter a valid GitHub repository URL (must contain github.com/).");
       return;
@@ -279,9 +284,12 @@ export default function Challenges() {
 
   const isSelectedSubmitted = selectedChallenge ? submittedChallengeIds.has(selectedChallenge.challengeId) : false;
   const selectedSubmission = selectedChallenge ? userSubmissions[selectedChallenge.challengeId] : null;
+  const selectedSubmissionStatus = (selectedSubmission?.status || "").toLowerCase();
+  const isSelectedOnHold = ["on_hold", "onhold"].includes(selectedSubmissionStatus);
   const isSelectedVerified = selectedSubmission
     ? ["verified", "reviewed", "approved"].includes((selectedSubmission.status || "").toLowerCase())
     : false;
+  const canResubmitSelectedChallenge = isSelectedSubmitted && isSelectedOnHold;
 
   return (
     <div className="space-y-8 py-4">
@@ -406,12 +414,18 @@ export default function Challenges() {
                           {formatDifficulty(c.difficulty)}
                         </span>
                         {isSubmitted ? (
-                          <span className="border-2 border-black bg-[#7AE582] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
-                            ✓ SUBMITTED
-                          </span>
+                          ["on_hold", "onhold"].includes((userSubmissions[c.challengeId]?.status || "").toLowerCase()) ? (
+                            <span className="border-2 border-black bg-[#FF9F1C] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
+                              ON HOLD →
+                            </span>
+                          ) : (
+                            <span className="border-2 border-black bg-[#7AE582] text-black text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
+                              ✓ SUBMITTED
+                            </span>
+                          )
                         ) : (
                           <span className="border-2 border-black bg-[#00B7FF] text-white text-xs font-extrabold px-3 py-1.5 shadow-[2px_2px_0_black]">
-                            OPEN →
+                            CLOSED
                           </span>
                         )}
                       </div>
@@ -552,13 +566,19 @@ export default function Challenges() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {isSelectedSubmitted && !forceShowForm ? (
+                  {success && (
+                    <div className="border-2 border-black bg-[#7AE582] p-3 text-sm font-bold text-black shadow-[2px_2px_0_black]">
+                      Submission created successfully! It is now pending review.
+                    </div>
+                  )}
+
+                  {canResubmitSelectedChallenge && !forceShowForm ? (
                     <div className="border-4 border-black bg-[#7AE582] p-6 shadow-[6px_6px_0_black] text-center">
                       <h4 className="text-2xl font-black">
-                        {success ? "Solution Submitted!" : "Solution Already Submitted!"}
+                        {success ? "Solution Submitted!" : "Submission On Hold"}
                       </h4>
                       <p className="mt-2 font-medium text-sm md:text-base mb-6">
-                        You have successfully shipped your project. You can check score evaluations, rank, and reviewer feedback on the{" "}
+                        Your submission is on hold, so you can submit an updated version now. Check score evaluations, rank, and reviewer feedback on the{" "}
                         <Link to="/submissions" className="underline font-bold text-black">
                           Submissions Dashboard
                         </Link>.
@@ -569,35 +589,41 @@ export default function Challenges() {
                           setSuccess(false);
                           setError("");
                         }}
-                        disabled={isSelectedVerified}
-                        aria-disabled={isSelectedVerified}
-                        className={`border-4 border-black px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black inline-block ${
-                          isSelectedVerified ? "bg-gray-300 cursor-not-allowed border-gray-400 text-gray-700" : "bg-white hover:bg-gray-100"
-                        }`}
+                        className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black inline-block hover:bg-gray-100"
                       >
                         Submit Solution Again
                       </button>
+                    </div>
+                  ) : isSelectedSubmitted ? (
+                    <div className="border-4 border-black bg-[#FF595E] p-6 shadow-[6px_6px_0_black] text-center">
+                      <h4 className="text-2xl font-black text-black">Submission Period Closed</h4>
+                      <p className="mt-2 font-medium text-sm md:text-base mb-0 text-black">
+                        This submission is no longer on hold, so resubmissions are disabled.
+                      </p>
                       {isSelectedVerified && (
-                        <p className="mt-3 text-sm font-medium text-gray-700">
-                          This submission is verified - resubmissions are disabled.
+                        <p className="mt-3 text-sm font-medium text-black">
+                          This submission has already been verified.
                         </p>
                       )}
                     </div>
                   ) : (
+                    <div className="border-4 border-black bg-[#FF595E] p-6 shadow-[6px_6px_0_black] text-center">
+                      <h4 className="text-2xl font-black text-black">Submission Period Closed</h4>
+                      <p className="mt-2 font-medium text-sm md:text-base mb-0 text-black">
+                        New submissions are no longer being accepted for this challenge.
+                      </p>
+                    </div>
+                  )}
+
+                  {canResubmitSelectedChallenge && forceShowForm && (
                     <form onSubmit={handleSubmission} className="space-y-5">
                       <h2 className="text-2xl font-black border-b-4 border-black pb-3">
-                        {isSelectedSubmitted ? "Resubmit Project Solution" : "Submit Project Solution"}
+                        Resubmit Project Solution
                       </h2>
 
                       {error && (
                         <div className="border-2 border-black bg-[#FF595E] p-3 text-sm font-bold text-black shadow-[2px_2px_0_black]">
                           {error}
-                        </div>
-                      )}
-
-                      {success && (
-                        <div className="border-2 border-black bg-[#7AE582] p-3 text-sm font-bold text-black shadow-[2px_2px_0_black]">
-                          Submission created successfully!
                         </div>
                       )}
 
@@ -666,22 +692,20 @@ export default function Challenges() {
                           disabled={submitting}
                           className="flex-1 min-w-[200px]"
                         >
-                          {submitting ? "Submitting..." : (isSelectedSubmitted ? "Resubmit Solution" : "Submit Project Solution")}
+                          {submitting ? "Submitting..." : "Resubmit Solution"}
                         </Button>
-                        {isSelectedSubmitted && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setForceShowForm(false);
-                              setSuccess(false);
-                              setError("");
-                            }}
-                            disabled={submitting}
-                            className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-gray-100 transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setForceShowForm(false);
+                            setSuccess(false);
+                            setError("");
+                          }}
+                          disabled={submitting}
+                          className="border-4 border-black bg-white px-6 py-2.5 font-extrabold shadow-[4px_4px_0_black] hover:bg-gray-100 transition active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-black cursor-pointer"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </form>
                   )}
