@@ -11,6 +11,7 @@ import Challenges from "../pages/Challenges.jsx";
 import Submissions from "../pages/Submissions.jsx";
 import Leaderboard from "../pages/Leaderboard.jsx";
 import Rules from "../pages/Rules.jsx";
+import Feedback from "../pages/Feedback.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
       { path: "challenges/:slug?", element: (<ProtectedRoute><Challenges /></ProtectedRoute>), },
       { path: "submissions", element: (<ProtectedRoute><Submissions /></ProtectedRoute>), },
       { path: "leaderboard", element: (<ProtectedRoute><Leaderboard /></ProtectedRoute>), },
+      { path: "feedback", element: (<ProtectedRoute><Feedback /></ProtectedRoute>), },
       { path: "rules", element: <Rules />, },
     ],
   },

@@ -180,6 +180,8 @@ const steps = [
 export default function Landing() {
   const user = useAuthStore((state) => state.user);
   const primaryCta = user ? "/dashboard" : "/login";
+  const heroCtaTo = user ? "/feedback" : "/login";
+  const heroCtaLabel = user ? "Give Feedback" : "Login";
 
   return (
     <div className="min-h-screen bg-[#FFF8E7] space-y-10 md:space-y-0">
@@ -262,10 +264,10 @@ export default function Landing() {
             {/* CTA */}
             <div className="flex justify-center md:justify-start mt-4">
               <Link
-                to="/login"
+                to={heroCtaTo}
                 className="border-4 border-black bg-[#00B7FF] px-6 py-4 sm:py-5 font-extrabold shadow-[6px_6px_0_black] transition-all duration-150 hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
               >
-                Login
+                {heroCtaLabel}
               </Link>
             </div>
 
