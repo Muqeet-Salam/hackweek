@@ -262,12 +262,18 @@ export default function Landing() {
             </div>
 
             {/* CTA */}
-            <div className="flex justify-center md:justify-start mt-4">
+            <div className="flex justify-center md:justify-start mt-4 gap-4">
               <Link
                 to={heroCtaTo}
                 className="border-4 border-black bg-[#00B7FF] px-6 py-4 sm:py-5 font-extrabold shadow-[6px_6px_0_black] transition-all duration-150 hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
               >
                 {heroCtaLabel}
+              </Link>
+              <Link
+                to="/leaderboard"
+                className="border-4 border-black bg-[#00B7FF] px-6 py-4 sm:py-5 font-extrabold shadow-[6px_6px_0_black] transition-all duration-150 hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
+              >
+                Leaderboard
               </Link>
             </div>
 

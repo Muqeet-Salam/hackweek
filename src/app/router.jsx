@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
       { path: "profile", element: (<ProtectedRoute><Profile /></ProtectedRoute>), },
       { path: "challenges/:slug?", element: (<ProtectedRoute><Challenges /></ProtectedRoute>), },
       { path: "submissions", element: (<ProtectedRoute><Submissions /></ProtectedRoute>), },
-      { path: "leaderboard", element: (<ProtectedRoute><Leaderboard /></ProtectedRoute>), },
+      { path: "leaderboard", element:<Leaderboard /> },
       { path: "feedback", element: (<ProtectedRoute><Feedback /></ProtectedRoute>), },
       { path: "rules", element: <Rules />, },
     ],
